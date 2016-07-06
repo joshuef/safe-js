@@ -1,6 +1,6 @@
 {
   "name": "safe-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
   "main": "src/index.js",
   "scripts": {
