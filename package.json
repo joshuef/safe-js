@@ -1,9 +1,10 @@
 {
   "name": "safe-js",
-  "version": "0.0.0",
-  "description": "SAFE Network es6 isomorphic js api helper",
+  "version": "0.0.1",
+  "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
   "main": "index.js",
   "scripts": {
+    "dist" : "cp -r ./src ./dist && echo 'dist built'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
