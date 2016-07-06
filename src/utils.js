@@ -6,22 +6,23 @@ const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
 const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
 
+export const getAuthToken = function( tokenKey = TOKEN_KEY )
+{
+    console.log( "getting auttttttth token" , localStorage.getItem( tokenKey ));
+    return localStorage.getItem( tokenKey );
+};
+
+export const getUserLongName = function( longNameKey = LONG_NAME_KEY ) {
+    return localStorage.getItem(longNameKey);
+};
+
 export const setAuthToken = function( tokenKey = TOKEN_KEY, token)
 {
     localStorage.setItem( tokenKey, token );
 };
 
-export const getAuthToken = function( tokenKey = TOKEN_KEY )
-{
-    return localStorage.getItem( tokenKey );
-};
-
 export const setUserLongName = function(longNameKey = LONG_NAME_KEY, longName) {
     localStorage.setItem(longNameKey, longName);
-};
-
-export const getUserLongName = function( longNameKey = LONG_NAME_KEY ) {
-    return localStorage.getItem(longNameKey);
 };
 
 export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
@@ -103,7 +104,9 @@ export const isTokenValid = function( tokenKey ) {
 
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 || response.status !== 401  )
+
+        console.log( 'booooom',response.status );
+        if (response.status !== 200 && response.status !== 401  )
         {
             console.debug('safe-js.auth.isTokenValid failed with status ' + response.status + ' ' + response.statusText );
         }

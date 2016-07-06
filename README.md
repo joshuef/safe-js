@@ -30,7 +30,7 @@ Auth:
 import * as safe from 'safe-js';
 import packageData from '../package.json'
 
-const TOKEN_KEY = 'BOOM';
+const LOCAL_STORAGE_TOKEN_KEY = 'BOOM';
 
 const app =
 {
@@ -40,16 +40,17 @@ const app =
     vendor: "vendor_name"
 };
 
-safe.utils.authorise( TOKEN_KEY, app );
+safe.utils.authorise( LOCAL_STORAGE_TOKEN_KEY, app );
 ```
 
 getFile:
 
 ```js
-safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_FILES);
+safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 ```
 
 ## Todo
 
-- [ ] Test all available functions.
-- [ ] Add tests
+- [ ] Get all functions stable available functions.
+- [ ] Add documentation.
+- [ ] Add mocha tests.

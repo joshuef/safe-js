@@ -134,57 +134,85 @@ export const getFile = function( token, filePath, isPathShared = false, download
         }
     };
 
-    console.log( payload );
     return fetch(url, payload)
-    .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText );
-        }
+        .then( (response) => {
+            if (response.status !== 200 && response.status !== 206)
+            {
+                console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText );
+            }
 
-        return response
-    })
+            if( response.status === 200 )
+            {
+                return response.json().then( json =>
+                    {
+                        response.__parsedResponseBody__ = json
+                        return response;
+                    })
+            }
+            else {
+                return response;
+            }
+        }).catch( error =>
+        {
+            console.debug( "safe-js.nfs.getFile response error" , error );
+        })
 
 };
 
-export const modifyFileContent = function(token, filePath, isPathShared = false, localPath, offset, callback) {
-    offset = offset || 0;
+
+// perhaps data object with mime type in there
+export const modifyFileContent = function(token, filePath, dataToWrite, isPathShared = false, offset = 0)
+{
     var self = this;
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var fileStream = fs.createReadStream(localPath).on('data', function(chunk) {
-        callback(null, chunk.length);
-    });
-    fileStream.pipe( fetch(url, {
-        method: PUT,
-        headers: {
-            'Content-Type': mime.lookup(filePath),
-            'Range': 'Bytes=' + offset + '-'
+
+    const payload =
+    {
+        method: 'PUT',
+        headers:
+        {
+            'Content-Type': 'text/plain',
+            // 'Range': 'Bytes=' + offset + '-'
+            Authorization: 'Bearer ' + token
         },
-        auth: {
-            'bearer': self.getAuthToken()
-        }
-    }, function(e, response) {
-        if (response.statusCode !== 200) {
-            var errMsg = response.body;
-            if (!response.statusCode) {
-                errMsg = {
-                    errorCode: 400,
-                    description: 'Request connection closed abruptly'
-                }
-            } else {
-                try {
-                    errMsg = JSON.parse(errMsg);
-                } catch(e) {
-                    errMsg = {
+        body: JSON.stringify( dataToWrite )
+    };
+
+    return fetch(url, payload)
+    .then( response =>
+        {
+            let parsedResponse;
+            console.log( "RESPONSSSNNNSESSEE???", response );
+            if (response.status !== 200)
+            {
+                console.debug('safe-js.nfs.modifyFileContent failed with status ' + response.status + ' ' + response.statusText );
+
+                var errMsg = response.body;
+
+                if (!response.status)
+                {
+                    let errObject = {
                         errorCode: 400,
-                        description: errMsg
+                        description: 'Request connection closed abruptly'
                     }
+                    return errObject;
+
+
                 }
             }
-            callback({body: !response.statusCode ? 'Request connection closed' : JSON.parse(response.body)});
-        }
-    }) );
+            if( response.status === 200 )
+            {
+                return response.json().then( json =>
+                    {
+                        response.__parsedResponseBody__ = json
+                        return response;
+                    })
+            }
+            else {
+                return response;
+            }
+     })
 };
 
 
