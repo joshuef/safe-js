@@ -150,59 +150,68 @@ var getFile = exports.getFile = function getFile(token, filePath) {
         }
     };
 
-    console.log(payload);
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
             console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText);
         }
 
-        return response;
+        if (response.status === 200) {
+            return response.json().then(function (json) {
+                response.__parsedResponseBody__ = json;
+                return response;
+            });
+        } else {
+            return response;
+        }
+    }).catch(function (error) {
+        console.debug("safe-js.nfs.getFile response error", error);
     });
 };
 
-var modifyFileContent = exports.modifyFileContent = function modifyFileContent(token, filePath) {
-    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-    var localPath = arguments[3];
-    var offset = arguments[4];
-    var callback = arguments[5];
+// perhaps data object with mime type in there
+var modifyFileContent = exports.modifyFileContent = function modifyFileContent(token, filePath, dataToWrite) {
+    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+    var offset = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
 
-    offset = offset || 0;
     var self = this;
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var fileStream = _fs2.default.createReadStream(localPath).on('data', function (chunk) {
-        callback(null, chunk.length);
-    });
-    fileStream.pipe((0, _isomorphicFetch2.default)(url, {
-        method: PUT,
+
+    var payload = {
+        method: 'PUT',
         headers: {
-            'Content-Type': mime.lookup(filePath),
-            'Range': 'Bytes=' + offset + '-'
+            'Content-Type': 'text/plain',
+            // 'Range': 'Bytes=' + offset + '-'
+            Authorization: 'Bearer ' + token
         },
-        auth: {
-            'bearer': self.getAuthToken()
-        }
-    }, function (e, response) {
-        if (response.statusCode !== 200) {
+        body: JSON.stringify(dataToWrite)
+    };
+
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        var parsedResponse = void 0;
+        console.log("RESPONSSSNNNSESSEE???", response);
+        if (response.status !== 200) {
+            console.debug('safe-js.nfs.modifyFileContent failed with status ' + response.status + ' ' + response.statusText);
+
             var errMsg = response.body;
-            if (!response.statusCode) {
-                errMsg = {
+
+            if (!response.status) {
+                var errObject = {
                     errorCode: 400,
                     description: 'Request connection closed abruptly'
                 };
-            } else {
-                try {
-                    errMsg = JSON.parse(errMsg);
-                } catch (e) {
-                    errMsg = {
-                        errorCode: 400,
-                        description: errMsg
-                    };
-                }
+                return errObject;
             }
-            callback({ body: !response.statusCode ? 'Request connection closed' : JSON.parse(response.body) });
         }
-    }));
+        if (response.status === 200) {
+            return response.json().then(function (json) {
+                response.__parsedResponseBody__ = json;
+                return response;
+            });
+        } else {
+            return response;
+        }
+    });
 };
 
 var rename = exports.rename = function rename(token, path) {

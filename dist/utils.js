@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.authorise = exports.isTokenValid = exports.sendAuthorisationRequest = exports.getUserLongName = exports.setUserLongName = exports.getAuthToken = exports.setAuthToken = undefined;
+exports.authorise = exports.isTokenValid = exports.sendAuthorisationRequest = exports.setUserLongName = exports.setAuthToken = exports.getUserLongName = exports.getAuthToken = undefined;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -17,6 +17,19 @@ var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
 
+var getAuthToken = exports.getAuthToken = function getAuthToken() {
+    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
+
+    console.log("getting auttttttth token", localStorage.getItem(tokenKey));
+    return localStorage.getItem(tokenKey);
+};
+
+var getUserLongName = exports.getUserLongName = function getUserLongName() {
+    var longNameKey = arguments.length <= 0 || arguments[0] === undefined ? LONG_NAME_KEY : arguments[0];
+
+    return localStorage.getItem(longNameKey);
+};
+
 var setAuthToken = exports.setAuthToken = function setAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var token = arguments[1];
@@ -24,23 +37,11 @@ var setAuthToken = exports.setAuthToken = function setAuthToken() {
     localStorage.setItem(tokenKey, token);
 };
 
-var getAuthToken = exports.getAuthToken = function getAuthToken() {
-    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
-
-    return localStorage.getItem(tokenKey);
-};
-
 var setUserLongName = exports.setUserLongName = function setUserLongName() {
     var longNameKey = arguments.length <= 0 || arguments[0] === undefined ? LONG_NAME_KEY : arguments[0];
     var longName = arguments[1];
 
     localStorage.setItem(longNameKey, longName);
-};
-
-var getUserLongName = exports.getUserLongName = function getUserLongName() {
-    var longNameKey = arguments.length <= 0 || arguments[0] === undefined ? LONG_NAME_KEY : arguments[0];
-
-    return localStorage.getItem(longNameKey);
 };
 
 var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendAuthorisationRequest(tokenKey) {
@@ -114,7 +115,9 @@ var isTokenValid = exports.isTokenValid = function isTokenValid(tokenKey) {
     };
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-        if (response.status !== 200 || response.status !== 401) {
+
+        console.log('booooom', response.status);
+        if (response.status !== 200 && response.status !== 401) {
             console.debug('safe-js.auth.isTokenValid failed with status ' + response.status + ' ' + response.statusText);
         }
         return response;
