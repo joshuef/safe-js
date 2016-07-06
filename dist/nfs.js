@@ -1,97 +1,179 @@
-import fs from 'fs';
+'use strict';
 
-const ROOT_PATH =
-{
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.renameFile = exports.renameDirectory = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.createFile = exports.deleteFile = exports.deleteDirectory = exports.createDir = undefined;
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _isomorphicFetch = require('isomorphic-fetch');
+
+var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ROOT_PATH = {
     APP: 'app',
     DRIVE: 'drive'
 };
 
-const SERVER = 'http://localhost:8100/'
+var SERVER = 'http://localhost:8100/';
 
- var fetch = require('isomorphic-fetch');
+// create new directory
+var createDir = exports.createDir = function createDir(token, dirPath, isPrivate, userMetadata) {
+    var isPathShared = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
+    var callback = arguments[5];
 
-  // create new directory
- export const createDir = function( token, dirPath, isPrivate, userMetadata, isPathShared = false, callback) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     dirPath = dirPath[0] === '/' ? dirPath.slice(1) : dirPath;
+    var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
-      url: SERVER + 'nfs/directory/' + rootPath + '/' + dirPath,
-      method: 'POST',
-      headers: {
-        authorization: 'Bearer ' + token
-      },
-      data: {
-        isPrivate: isPrivate,
-        userMetadata: userMetadata
-      }
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + token
+        },
+        body: {
+            isPrivate: isPrivate,
+            userMetabody: userMetadata
+        }
     };
-    (new fetch(payload, callback)).send();
-  };
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.createDir failed with status ' + response.status + ' ' + response.statusText);
+        }
 
-  // get specific directory
-  export const getDir = function(token, callback, dirPath, isPathShared = false) {
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var URL = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
-    var payload = {
-      url: URL,
-      method: 'GET',
-      headers: {
-        authorization: 'Bearer ' + token
-      }
-    };
-    (new fetch(payload, callback)).send();
-  };
+        return response;
+    });
+};
 
-  export const deleteDirectory = function( token, dirPath, isPathShared = false, callback) {
+var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, dirPath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var callback = arguments[3];
+
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
-      url: url,
-      method: 'DELETE',
-      headers: {
-        authorization: 'Bearer ' + token
-      }
+        method: 'DELETE',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
     };
-    (new fetch(payload, callback)).send();
-  };
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
+        }
 
-  export const deleteFile = function( token, filePath, isPathShared = false, callback) {
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var payload = {
-      url: SERVER + 'nfs/file/' + rootPath + '/' + filePath,
-      method: 'DELETE',
-      headers: {
-        authorization: 'Bearer ' + token
-      }
-    };
-    (new fetch(payload, callback)).send();
-  };
+        return response;
+    });
+};
 
-  export const createFile = function( token, filePath, metadata, isPathShared = false, callback) {
+var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var callback = arguments[3];
+
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
-      url: url,
-      method: 'POST',
-      headers: {
-        authorization: 'Bearer ' + token
-      },
-      data: {
-        metadata: metadata
-      }
+        method: 'DELETE',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
     };
-    (new fetch(payload, callback)).send();
-  };
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.deleteFile failed with status ' + response.status + ' ' + response.statusText);
+        }
 
-  export const modifyFileContent = function(token, filePath, isPathShared = false, localPath, offset, callback) {
+        return response;
+    });
+};
+
+var createFile = exports.createFile = function createFile(token, filePath, metadata) {
+    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+    var callback = arguments[4];
+
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
+    var payload = {
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + token
+        },
+        body: {
+            metabody: metadata
+        }
+    };
+
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.createFile failed with status ' + response.status + ' ' + response.statusText);
+        }
+
+        return response;
+    });
+};
+
+// get specific directory
+var getDir = exports.getDir = function getDir(token, callback, dirPath) {
+    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
+    var payload = {
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    };
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.getDir failed with status ' + response.status + ' ' + response.statusText);
+        }
+
+        return response;
+    });
+};
+
+var getFile = exports.getFile = function getFile(token, filePath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var downloadPath = arguments[3];
+
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
+    var payload = {
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'text/plain'
+        }
+    };
+
+    console.log(payload);
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText);
+        }
+
+        return response;
+    });
+};
+
+var modifyFileContent = exports.modifyFileContent = function modifyFileContent(token, filePath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var localPath = arguments[3];
+    var offset = arguments[4];
+    var callback = arguments[5];
+
     offset = offset || 0;
     var self = this;
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var fileStream = fs.createReadStream(localPath).on('data', function(chunk) {
-      callback(null, chunk.length);
+    var fileStream = _fs2.default.createReadStream(localPath).on('data', function (chunk) {
+        callback(null, chunk.length);
     });
-    fileStream.pipe(fetch(url, {
+    fileStream.pipe((0, _isomorphicFetch2.default)(url, {
         method: PUT,
         headers: {
             'Content-Type': mime.lookup(filePath),
@@ -100,72 +182,67 @@ const SERVER = 'http://localhost:8100/'
         auth: {
             'bearer': self.getAuthToken()
         }
-    }, function(e, response) {
-      if (response.statusCode !== 200) {
-        var errMsg = response.body;
-        if (!response.statusCode) {
-          errMsg = {
-            errorCode: 400,
-            description: 'Request connection closed abruptly'
-          }
-        } else {
-          try {
-            errMsg = JSON.parse(errMsg);
-          } catch(e) {
-            errMsg = {
-              errorCode: 400,
-              description: errMsg
+    }, function (e, response) {
+        if (response.statusCode !== 200) {
+            var errMsg = response.body;
+            if (!response.statusCode) {
+                errMsg = {
+                    errorCode: 400,
+                    description: 'Request connection closed abruptly'
+                };
+            } else {
+                try {
+                    errMsg = JSON.parse(errMsg);
+                } catch (e) {
+                    errMsg = {
+                        errorCode: 400,
+                        description: errMsg
+                    };
+                }
             }
-          }
+            callback({ body: !response.statusCode ? 'Request connection closed' : JSON.parse(response.body) });
         }
-        callback({data: !response.statusCode ? 'Request connection closed' : JSON.parse(response.body)});
-      }
     }));
-  };
+};
 
-  export const getFile = function( token, filePath, isPathShared = false, downloadPath ) {
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var payload = {
-        headers: {
-            'Authorization':'Bearer ' + token,
-            'Content-Type':'text/plain'
-        }
-    };
+var rename = exports.rename = function rename(token, path) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var newName = arguments[3];
+    var isFile = arguments[4];
+    var callback = arguments[5];
 
-    console.log( payload );
-    return fetch(url, payload)
-    .then( (response) => {
-      if (response.status !== 200 && response.status !== 206)
-      {
-        console.debug('SAGE.NFS.getFile Failed with status ' + response.status + ' ' + response.statusText );
-      }
-
-      return response
-    })
-
-  };
-
-  export const rename = function(token, path, isPathShared = false, newName, isFile, callback) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + (isFile ? 'nfs/file/metadata/' : 'nfs/directory/') + rootPath + '/' + path;
     var payload = {
-      url: url,
-      method: 'PUT',
-      headers: {
-        authorization: 'Bearer ' + token
-      },
-      data: {
-        name: newName
-      }
+        method: 'PUT',
+        headers: {
+            Authorization: 'Bearer ' + token
+        },
+        body: {
+            name: newName
+        }
     };
-    (new fetch(payload, callback)).send();
-  };
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
+        }
 
-  export const renameDirectory = function(token, dirPath, isPathShared = false, newName, callback) {
+        return response;
+    });
+};
+
+var renameDirectory = exports.renameDirectory = function renameDirectory(token, dirPath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+    var newName = arguments[3];
+    var callback = arguments[4];
+
     rename(dirPath, isPathShared, newName, false, callback);
-  };
+};
 
-  export const renameFile = function(oldPath, isPathShared = false, newPath, callback) {
+var renameFile = exports.renameFile = function renameFile(oldPath) {
+    var isPathShared = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+    var newPath = arguments[2];
+    var callback = arguments[3];
+
     rename(dirPath, isPathShared, newName, true, callback);
-  };
+};
