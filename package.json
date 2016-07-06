@@ -1,7 +1,7 @@
 {
   "name": "safe-js",
   "version": "0.0.0",
-  "description": "SAFE Network es6 js api helper",
+  "description": "SAFE Network es6 isomorphic js api helper",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +13,8 @@
   "keywords": [
     "safe-network",
     "api",
-    "privacy"
+    "privacy",
+    "isomorphic"
   ],
   "author": "Josh Wilson <joshuef@gmail.com>",
   "license": "ISC",
