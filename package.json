@@ -1,0 +1,24 @@
+{
+  "name": "safe-js",
+  "version": "0.0.0",
+  "description": "SAFE Network es6 js api helper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshuef/safe-js"
+  },
+  "keywords": [
+    "safe-network",
+    "api",
+    "privacy"
+  ],
+  "author": "Josh Wilson <joshuef@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshuef/safe-js/issues"
+  },
+  "homepage": "https://github.com/joshuef/safe-js"
+}
