@@ -20,7 +20,6 @@ var dnsList = null;
 var getAuthToken = exports.getAuthToken = function getAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
 
-    console.log("getting auttttttth token", localStorage.getItem(tokenKey));
     return localStorage.getItem(tokenKey);
 };
 
@@ -115,8 +114,6 @@ var isTokenValid = exports.isTokenValid = function isTokenValid(tokenKey) {
     };
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-
-        console.log('booooom', response.status);
         if (response.status !== 200 && response.status !== 401) {
             console.debug('safe-js.auth.isTokenValid failed with status ' + response.status + ' ' + response.statusText);
         }
@@ -126,10 +123,8 @@ var isTokenValid = exports.isTokenValid = function isTokenValid(tokenKey) {
 
 // authorise application
 var authorise = exports.authorise = function authorise(tokenKey, packageData) {
-    console.log("accepted at auth", tokenKey, packageData);
     return isTokenValid(tokenKey).then(function (response) {
 
-        console.log('in auth', response);
         if (!response || response.error || response.status === 401) {
             localStorage.clear();
             return sendAuthorisationRequest(tokenKey, packageData);

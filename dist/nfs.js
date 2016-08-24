@@ -91,20 +91,19 @@ var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
     });
 };
 
-var createFile = exports.createFile = function createFile(token, filePath, metadata) {
-    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
-    var callback = arguments[4];
+var createFile = exports.createFile = function createFile(token, filePath, dataToWrite, metadata) {
+    var isPathShared = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
+    var callback = arguments[5];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
         method: 'POST',
         headers: {
-            Authorization: 'Bearer ' + token
-        },
-        body: {
+            Authorization: 'Bearer ' + token,
             metabody: metadata
-        }
+        },
+        body: JSON.stringify(dataToWrite)
     };
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
@@ -112,7 +111,14 @@ var createFile = exports.createFile = function createFile(token, filePath, metad
             console.debug('safe-js.nfs.createFile failed with status ' + response.status + ' ' + response.statusText);
         }
 
-        return response;
+        if (response.status === 200) {
+            return response.json().then(function (json) {
+                response.__parsedResponseBody__ = json;
+                return response;
+            });
+        } else {
+            return response;
+        }
     });
 };
 
