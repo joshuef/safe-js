@@ -76,18 +76,17 @@ export const deleteFile = function( token, filePath, isPathShared = false, callb
     });
 };
 
-export const createFile = function( token, filePath, metadata, isPathShared = false, callback)
+export const createFile = function( token, filePath, dataToWrite, metadata, isPathShared = false, callback)
 {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
         method: 'POST',
         headers: {
-            Authorization: 'Bearer ' + token
-        },
-        body: {
+            Authorization: 'Bearer ' + token,
             metabody: metadata
-        }
+        },
+        body: JSON.stringify( dataToWrite )
     };
 
     return fetch( url, payload )
@@ -97,7 +96,18 @@ export const createFile = function( token, filePath, metadata, isPathShared = fa
             console.debug('safe-js.nfs.createFile failed with status ' + response.status + ' ' + response.statusText );
         }
 
-        return response
+        if( response.status === 200 )
+        {
+            return response.json().then( json =>
+                {
+                    response.__parsedResponseBody__ = json
+                    return response;
+                })
+        }
+        else {
+            return response;
+        }
+
     });
 };
 

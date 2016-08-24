@@ -2,7 +2,7 @@
   "name": "safe-js",
   "version": "0.0.7",
   "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1",
