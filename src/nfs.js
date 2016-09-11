@@ -9,6 +9,24 @@ const ROOT_PATH =
 
 const SERVER = 'http://localhost:8100/'
 
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+export const manifest = {
+    createDir               : 'promise',
+    deleteDirectory         : 'promise',
+    deleteFile              : 'promise',
+    createFile              : 'promise',
+    getDir                  : 'promise',
+    getFile                 : 'promise',
+    modifyFileContent       : 'promise',
+    rename                  : 'promise',
+    renameDirectory         : 'promise',
+    renameFile              : 'promise'
+}
+
+
 
 // create new directory
 export const createDir = function( token, dirPath, isPrivate, userMetadata, isPathShared = false, callback) {

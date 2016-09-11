@@ -6,18 +6,73 @@ const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
 const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
 
+let fakeLocalStorage = {};
+
+
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+export const manifest = {
+    getAuthToken                : 'sync',
+    getUserLongName             : 'sync',
+    setAuthToken                : 'sync',
+    setUserLongName             : 'sync',
+    sendAuthorisationRequest    : 'promise',
+    isTokenValid                : 'promise',
+    authorise                   : 'promise'
+}
+
+
+
 export const getAuthToken = function( tokenKey = TOKEN_KEY )
 {
-    return localStorage.getItem( tokenKey );
+    let storage;   
+
+    // TODO: shim localstorage properly.
+    
+    if( typeof localStorage !== 'undefined' )
+    {
+        storage = localStorage;    
+    }
+    else {
+        storage = fakeLocalStorage;
+    }
+
+    if( storage.getItem )
+    {
+        return storage.getItem( tokenKey );
+    }
+    else {
+        return  storage[ tokenKey ]
+    }
 };
 
-export const getUserLongName = function( longNameKey = LONG_NAME_KEY ) {
+export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStorage ) {
     return localStorage.getItem(longNameKey);
 };
 
 export const setAuthToken = function( tokenKey = TOKEN_KEY, token)
 {
-    localStorage.setItem( tokenKey, token );
+    let storage;   
+    
+    // TODO: shim localstorage properly.
+    if( typeof localStorage !== 'undefined' )
+    {
+        storage = localStorage;    
+        
+    }
+    else {
+        storage = fakeLocalStorage;
+    }    
+    
+    if( storage.setItem )
+    {
+        storage.setItem( tokenKey, token );
+    }
+    else {
+        storage[ tokenKey ] = token;
+    }
 };
 
 export const setUserLongName = function(longNameKey = LONG_NAME_KEY, longName) {
@@ -91,7 +146,7 @@ export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
     });
 };
 
-export const isTokenValid = function( tokenKey ) {
+export const isTokenValid = function( tokenKey = TOKEN_KEY  ) {
     let url = SERVER + 'auth';
     let token = getAuthToken( tokenKey );
     var payload = {
@@ -112,7 +167,7 @@ export const isTokenValid = function( tokenKey ) {
 };
 
 // authorise application
-export const authorise = function( tokenKey, packageData )
+export const authorise = function( tokenKey = TOKEN_KEY, packageData )
 {
     return isTokenValid( tokenKey )
         .then( response => {

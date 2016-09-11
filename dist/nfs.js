@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.renameFile = exports.renameDirectory = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.createFile = exports.deleteFile = exports.deleteDirectory = exports.createDir = undefined;
+exports.renameFile = exports.renameDirectory = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.createFile = exports.deleteFile = exports.deleteDirectory = exports.createDir = exports.manifest = undefined;
 
 var _fs = require('fs');
 
@@ -21,6 +21,23 @@ var ROOT_PATH = {
 };
 
 var SERVER = 'http://localhost:8100/';
+
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+var manifest = exports.manifest = {
+    createDir: 'promise',
+    deleteDirectory: 'promise',
+    deleteFile: 'promise',
+    createFile: 'promise',
+    getDir: 'promise',
+    getFile: 'promise',
+    modifyFileContent: 'promise',
+    rename: 'promise',
+    renameDirectory: 'promise',
+    renameFile: 'promise'
+};
 
 // create new directory
 var createDir = exports.createDir = function createDir(token, dirPath, isPrivate, userMetadata) {

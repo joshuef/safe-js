@@ -2,6 +2,18 @@ import fetch    from 'isomorphic-fetch';
 
 const SERVER = 'http://localhost:8100/'
 
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+export const manifest = {
+    createPublicId      : 'promise',
+    getDns              : 'promise',
+    getServices         : 'promise',
+    addService          : 'promise',
+}
+
+
  export const createPublicId = function( token, longName, callback) {
     let url = SERVER + 'dns/' + longName;
     var payload = {

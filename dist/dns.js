@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.addService = exports.getServices = exports.getDns = exports.createPublicId = undefined;
+exports.addService = exports.getServices = exports.getDns = exports.createPublicId = exports.manifest = undefined;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -12,6 +12,17 @@ var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var SERVER = 'http://localhost:8100/';
+
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+var manifest = exports.manifest = {
+  createPublicId: 'promise',
+  getDns: 'promise',
+  getServices: 'promise',
+  addService: 'promise'
+};
 
 var createPublicId = exports.createPublicId = function createPublicId(token, longName, callback) {
   var url = SERVER + 'dns/' + longName;

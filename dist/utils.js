@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.authorise = exports.isTokenValid = exports.sendAuthorisationRequest = exports.setUserLongName = exports.setAuthToken = exports.getUserLongName = exports.getAuthToken = undefined;
+exports.authorise = exports.isTokenValid = exports.sendAuthorisationRequest = exports.setUserLongName = exports.setAuthToken = exports.getUserLongName = exports.getAuthToken = exports.manifest = undefined;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -17,14 +17,44 @@ var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
 
+var fakeLocalStorage = {};
+
+/*
+* Manifest for Beaker: 
+* https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
+*/
+var manifest = exports.manifest = {
+    getAuthToken: 'sync',
+    getUserLongName: 'sync',
+    setAuthToken: 'sync',
+    setUserLongName: 'sync',
+    sendAuthorisationRequest: 'promise',
+    isTokenValid: 'promise',
+    authorise: 'promise'
+};
+
 var getAuthToken = exports.getAuthToken = function getAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
 
-    return localStorage.getItem(tokenKey);
+    var storage = void 0;
+
+    console.log("getting");
+    if (typeof localStorage !== 'undefined') {
+        storage = localStorage;
+    } else {
+        storage = fakeLocalStorage;
+    }
+
+    if (storage.getItem) {
+        return storage.getItem(tokenKey);
+    } else {
+        return storage[tokenKey];
+    }
 };
 
 var getUserLongName = exports.getUserLongName = function getUserLongName() {
     var longNameKey = arguments.length <= 0 || arguments[0] === undefined ? LONG_NAME_KEY : arguments[0];
+    var localStorage = arguments[1];
 
     return localStorage.getItem(longNameKey);
 };
@@ -33,7 +63,22 @@ var setAuthToken = exports.setAuthToken = function setAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var token = arguments[1];
 
-    localStorage.setItem(tokenKey, token);
+    console.log("setting");
+    var storage = void 0;
+
+    if (typeof localStorage !== 'undefined') {
+        storage = localStorage;
+    } else {
+        storage = fakeLocalStorage;
+    }
+
+    console.log('setting: OUR STORAGE IS WHATT?????', storage);
+
+    if (storage.setItem) {
+        storage.setItem(tokenKey, token);
+    } else {
+        storage[tokenKey] = token;
+    }
 };
 
 var setUserLongName = exports.setUserLongName = function setUserLongName() {
@@ -103,7 +148,9 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
     });
 };
 
-var isTokenValid = exports.isTokenValid = function isTokenValid(tokenKey) {
+var isTokenValid = exports.isTokenValid = function isTokenValid() {
+    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
+
     var url = SERVER + 'auth';
     var token = getAuthToken(tokenKey);
     var payload = {
@@ -122,7 +169,10 @@ var isTokenValid = exports.isTokenValid = function isTokenValid(tokenKey) {
 };
 
 // authorise application
-var authorise = exports.authorise = function authorise(tokenKey, packageData) {
+var authorise = exports.authorise = function authorise() {
+    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
+    var packageData = arguments[1];
+
     return isTokenValid(tokenKey).then(function (response) {
 
         if (!response || response.error || response.status === 401) {
