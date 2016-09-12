@@ -38,7 +38,8 @@ var getAuthToken = exports.getAuthToken = function getAuthToken() {
 
     var storage = void 0;
 
-    console.log("getting");
+    // TODO: shim localstorage properly.
+
     if (typeof localStorage !== 'undefined') {
         storage = localStorage;
     } else {
@@ -63,16 +64,14 @@ var setAuthToken = exports.setAuthToken = function setAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var token = arguments[1];
 
-    console.log("setting");
     var storage = void 0;
 
+    // TODO: shim localstorage properly.
     if (typeof localStorage !== 'undefined') {
         storage = localStorage;
     } else {
         storage = fakeLocalStorage;
     }
-
-    console.log('setting: OUR STORAGE IS WHATT?????', storage);
 
     if (storage.setItem) {
         storage.setItem(tokenKey, token);
