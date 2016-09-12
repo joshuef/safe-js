@@ -1,6 +1,6 @@
 {
   "name": "safe-js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
   "main": "dist/index.js",
   "scripts": {
@@ -11,8 +11,8 @@
     "watch": "npm-watch"
   },
   "watch": {
-   "build": "src/**/*.js"
- },
+    "build": "src/**/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/joshuef/safe-js"
