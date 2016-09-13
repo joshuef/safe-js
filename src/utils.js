@@ -1,7 +1,7 @@
 import fetch    from 'isomorphic-fetch';
 
-const SERVER = 'http://localhost:8100/'
-
+const VERSION           = '0.5';
+const SERVER            = 'http://localhost:8100/' + VERSION + '/';
 const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
 const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
@@ -118,7 +118,7 @@ export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
     .then( response => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.auth.sendAuthorisationRequest failed with status ' +
+            throw new Error( 'SAFE sendAuthorisationRequest failed with status ' +
                 response.status + ' ' + response.statusText );
         }
 
@@ -129,15 +129,13 @@ export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
         if (!body && !headers)
         {
 
-            console.debug('safe-js.auth.sendAuthorisationRequest failed to connect to Launcher');
-            return('Unable to connect Launcher');
+            throw new Error( 'SAFE sendAuthorisationRequest failed to connect to Launcher');
         }
 
 
         if( !receivedToken )
         {
-            console.debug('safe-js.auth.sendAuthorisationRequest failed to parse token from response');
-            return('Unable to parse token');
+            throw new Error( 'SAFE sendAuthorisationRequest failed to parse token from response');
         }
 
         setAuthToken( tokenKey, receivedToken);
@@ -160,7 +158,7 @@ export const isTokenValid = function( tokenKey = TOKEN_KEY  ) {
     .then( (response) => {
         if (response.status !== 200 && response.status !== 401  )
         {
-            console.debug('safe-js.auth.isTokenValid failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText );
         }
         return response;
     });

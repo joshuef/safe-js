@@ -11,8 +11,8 @@ var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var SERVER = 'http://localhost:8100/';
-
+var VERSION = '0.5';
+var SERVER = 'http://localhost:8100/' + VERSION + '/';
 var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
@@ -123,7 +123,7 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
         return parsedResponse || response;
     }).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.auth.sendAuthorisationRequest failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE sendAuthorisationRequest failed with status ' + response.status + ' ' + response.statusText);
         }
 
         var body = response.body;
@@ -132,13 +132,11 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
 
         if (!body && !headers) {
 
-            console.debug('safe-js.auth.sendAuthorisationRequest failed to connect to Launcher');
-            return 'Unable to connect Launcher';
+            throw new Error('SAFE sendAuthorisationRequest failed to connect to Launcher');
         }
 
         if (!receivedToken) {
-            console.debug('safe-js.auth.sendAuthorisationRequest failed to parse token from response');
-            return 'Unable to parse token';
+            throw new Error('SAFE sendAuthorisationRequest failed to parse token from response');
         }
 
         setAuthToken(tokenKey, receivedToken);
@@ -161,7 +159,7 @@ var isTokenValid = exports.isTokenValid = function isTokenValid() {
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 401) {
-            console.debug('safe-js.auth.isTokenValid failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText);
         }
         return response;
     });

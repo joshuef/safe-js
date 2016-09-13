@@ -1,7 +1,7 @@
 import fetch    from 'isomorphic-fetch';
 
-const SERVER = 'http://localhost:8100/'
-
+const VERSION = '0.5';
+const SERVER = 'http://localhost:8100/' + VERSION + '/';
 /*
 * Manifest for Beaker: 
 * https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
@@ -26,7 +26,7 @@ export const manifest = {
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.dns.createPublicId failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE createPublicId failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -46,7 +46,7 @@ export const manifest = {
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.dns.getDns failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE getDns failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -66,7 +66,7 @@ export const manifest = {
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.dns.getServices failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE getServices failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -92,7 +92,7 @@ export const manifest = {
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.dns.addService failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE addService failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response

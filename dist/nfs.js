@@ -20,7 +20,8 @@ var ROOT_PATH = {
     DRIVE: 'drive'
 };
 
-var SERVER = 'http://localhost:8100/';
+var VERSION = '0.5';
+var SERVER = 'http://localhost:8100/' + VERSION + '/';
 
 /*
 * Manifest for Beaker: 
@@ -50,7 +51,7 @@ var createDir = exports.createDir = function createDir(token, dirPath, isPrivate
     var payload = {
         method: 'POST',
         headers: {
-            Authorization: 'Bearer ' + token
+            'Authorization': 'Bearer ' + token
         },
         body: {
             isPrivate: isPrivate,
@@ -59,7 +60,10 @@ var createDir = exports.createDir = function createDir(token, dirPath, isPrivate
     };
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.createDir failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error({ error: 'SAFE createDir failed with status ' + response.status + ' ' + response.statusText,
+                errorPayload: payload,
+                errorUrl: url
+            });
         }
 
         return response;
@@ -80,7 +84,7 @@ var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, 
     };
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
         }
 
         return response;
@@ -101,7 +105,7 @@ var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
     };
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.deleteFile failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE deleteFile failed with status ' + response.status + ' ' + response.statusText);
         }
 
         return response;
@@ -125,7 +129,7 @@ var createFile = exports.createFile = function createFile(token, filePath, dataT
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.createFile failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE createFile failed with status ' + response.status + ' ' + response.statusText);
         }
 
         if (response.status === 200) {
@@ -140,20 +144,20 @@ var createFile = exports.createFile = function createFile(token, filePath, dataT
 };
 
 // get specific directory
-var getDir = exports.getDir = function getDir(token, callback, dirPath) {
-    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+var getDir = exports.getDir = function getDir(token, dirPath) {
+    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
         method: 'GET',
         headers: {
-            Authorization: 'Bearer ' + token
+            'Authorization': 'Bearer ' + token
         }
     };
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.getDir failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE getDir failed with status ' + response.status + ' ' + response.statusText);
         }
 
         return response;
@@ -175,7 +179,7 @@ var getFile = exports.getFile = function getFile(token, filePath) {
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE getFile failed with status ' + response.status + ' ' + response.statusText);
         }
 
         if (response.status === 200) {
@@ -187,7 +191,7 @@ var getFile = exports.getFile = function getFile(token, filePath) {
             return response;
         }
     }).catch(function (error) {
-        console.debug("safe-js.nfs.getFile response error", error);
+        throw new Error("SAFE getFile response error", error);
     });
 };
 
@@ -204,7 +208,6 @@ var modifyFileContent = exports.modifyFileContent = function modifyFileContent(t
         method: 'PUT',
         headers: {
             'Content-Type': 'text/plain',
-            // 'Range': 'Bytes=' + offset + '-'
             Authorization: 'Bearer ' + token
         },
         body: JSON.stringify(dataToWrite)
@@ -212,9 +215,9 @@ var modifyFileContent = exports.modifyFileContent = function modifyFileContent(t
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         var parsedResponse = void 0;
-        console.log("RESPONSSSNNNSESSEE???", response);
+
         if (response.status !== 200) {
-            console.debug('safe-js.nfs.modifyFileContent failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE modifyFileContent failed with status ' + response.status + ' ' + response.statusText);
 
             var errMsg = response.body;
 
@@ -223,7 +226,7 @@ var modifyFileContent = exports.modifyFileContent = function modifyFileContent(t
                     errorCode: 400,
                     description: 'Request connection closed abruptly'
                 };
-                return errObject;
+                throw new Error(errObject);
             }
         }
         if (response.status === 200) {
@@ -237,26 +240,27 @@ var modifyFileContent = exports.modifyFileContent = function modifyFileContent(t
     });
 };
 
-var rename = exports.rename = function rename(token, path) {
-    var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-    var newName = arguments[3];
-    var isFile = arguments[4];
-    var callback = arguments[5];
+var rename = exports.rename = function rename(token, path, newName, metadata, isFile) {
+    var isPathShared = arguments.length <= 5 || arguments[5] === undefined ? false : arguments[5];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + (isFile ? 'nfs/file/metadata/' : 'nfs/directory/') + rootPath + '/' + path;
+
     var payload = {
         method: 'PUT',
         headers: {
-            Authorization: 'Bearer ' + token
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
         },
-        body: {
+        body: JSON.stringify({
             name: newName
-        }
+        })
     };
+
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
+            console.log("response:::", response);
+            throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText);
         }
 
         return response;
@@ -268,7 +272,7 @@ var renameDirectory = exports.renameDirectory = function renameDirectory(token, 
     var newName = arguments[3];
     var callback = arguments[4];
 
-    rename(dirPath, isPathShared, newName, false, callback);
+    return rename(dirPath, isPathShared, newName, false, callback);
 };
 
 var renameFile = exports.renameFile = function renameFile(oldPath) {
@@ -276,5 +280,5 @@ var renameFile = exports.renameFile = function renameFile(oldPath) {
     var newPath = arguments[2];
     var callback = arguments[3];
 
-    rename(dirPath, isPathShared, newName, true, callback);
+    return rename(dirPath, isPathShared, newName, true, callback);
 };

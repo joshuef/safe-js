@@ -11,8 +11,8 @@ var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var SERVER = 'http://localhost:8100/';
-
+var VERSION = '0.5';
+var SERVER = 'http://localhost:8100/' + VERSION + '/';
 /*
 * Manifest for Beaker: 
 * https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
@@ -34,7 +34,7 @@ var createPublicId = exports.createPublicId = function createPublicId(token, lon
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200 && response.status !== 206) {
-      console.debug('safe-js.dns.createPublicId failed with status ' + response.status + ' ' + response.statusText);
+      throw new Error('SAFE createPublicId failed with status ' + response.status + ' ' + response.statusText);
     }
 
     return response;
@@ -52,7 +52,7 @@ var getDns = exports.getDns = function getDns(token, callback) {
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200 && response.status !== 206) {
-      console.debug('safe-js.dns.getDns failed with status ' + response.status + ' ' + response.statusText);
+      throw new Error('SAFE getDns failed with status ' + response.status + ' ' + response.statusText);
     }
 
     return response;
@@ -70,7 +70,7 @@ var getServices = exports.getServices = function getServices(token, longName, ca
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200 && response.status !== 206) {
-      console.debug('safe-js.dns.getServices failed with status ' + response.status + ' ' + response.statusText);
+      throw new Error('SAFE getServices failed with status ' + response.status + ' ' + response.statusText);
     }
 
     return response;
@@ -94,7 +94,7 @@ var addService = exports.addService = function addService(token, longName, servi
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200 && response.status !== 206) {
-      console.debug('safe-js.dns.addService failed with status ' + response.status + ' ' + response.statusText);
+      throw new Error('SAFE addService failed with status ' + response.status + ' ' + response.statusText);
     }
 
     return response;

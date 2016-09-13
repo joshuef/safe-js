@@ -7,7 +7,9 @@ const ROOT_PATH =
     DRIVE: 'drive'
 };
 
-const SERVER = 'http://localhost:8100/'
+const VERSION = '0.5';
+const SERVER = 'http://localhost:8100/' + VERSION + '/';
+
 
 /*
 * Manifest for Beaker: 
@@ -36,7 +38,7 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     var payload = {
         method: 'POST',
         headers: {
-            Authorization: 'Bearer ' + token
+            'Authorization' : 'Bearer ' + token
         },
         body: {
             isPrivate: isPrivate,
@@ -47,7 +49,10 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.createDir failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( { error: 'SAFE createDir failed with status ' + response.status + ' ' + response.statusText,
+                                errorPayload: payload,
+                                errorUrl : url
+                            });
         }
 
         return response
@@ -67,7 +72,7 @@ export const deleteDirectory = function( token, dirPath, isPathShared = false, c
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE deleteDirectory failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -87,7 +92,7 @@ export const deleteFile = function( token, filePath, isPathShared = false, callb
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.deleteFile failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE deleteFile failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -111,7 +116,7 @@ export const createFile = function( token, filePath, dataToWrite, metadata, isPa
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.createFile failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE createFile failed with status ' + response.status + ' ' + response.statusText );
         }
 
         if( response.status === 200 )
@@ -131,20 +136,20 @@ export const createFile = function( token, filePath, dataToWrite, metadata, isPa
 
 
 // get specific directory
-export const getDir = function(token, callback, dirPath, isPathShared = false) {
+export const getDir = function(token, dirPath, isPathShared = false) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
         method: 'GET',
         headers: {
-            Authorization: 'Bearer ' + token
+            'Authorization': 'Bearer ' + token
         }
     };
     return fetch( url, payload)
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.getDir failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE getDir failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -166,7 +171,7 @@ export const getFile = function( token, filePath, isPathShared = false, download
         .then( (response) => {
             if (response.status !== 200 && response.status !== 206)
             {
-                console.debug('safe-js.nfs.getFile failed with status ' + response.status + ' ' + response.statusText );
+                throw new Error( 'SAFE getFile failed with status ' + response.status + ' ' + response.statusText );
             }
 
             if( response.status === 200 )
@@ -182,7 +187,7 @@ export const getFile = function( token, filePath, isPathShared = false, download
             }
         }).catch( error =>
         {
-            console.debug( "safe-js.nfs.getFile response error" , error );
+            throw new Error( "SAFE getFile response error" , error );
         })
 
 };
@@ -195,13 +200,13 @@ export const modifyFileContent = function(token, filePath, dataToWrite, isPathSh
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
 
+    
     const payload =
     {
         method: 'PUT',
         headers:
         {
             'Content-Type': 'text/plain',
-            // 'Range': 'Bytes=' + offset + '-'
             Authorization: 'Bearer ' + token
         },
         body: JSON.stringify( dataToWrite )
@@ -211,10 +216,10 @@ export const modifyFileContent = function(token, filePath, dataToWrite, isPathSh
     .then( response =>
         {
             let parsedResponse;
-            console.log( "RESPONSSSNNNSESSEE???", response );
+
             if (response.status !== 200)
             {
-                console.debug('safe-js.nfs.modifyFileContent failed with status ' + response.status + ' ' + response.statusText );
+                throw new Error( 'SAFE modifyFileContent failed with status ' + response.status + ' ' + response.statusText );
 
                 var errMsg = response.body;
 
@@ -224,7 +229,7 @@ export const modifyFileContent = function(token, filePath, dataToWrite, isPathSh
                         errorCode: 400,
                         description: 'Request connection closed abruptly'
                     }
-                    return errObject;
+                    throw new Error( errObject );
 
 
                 }
@@ -244,23 +249,28 @@ export const modifyFileContent = function(token, filePath, dataToWrite, isPathSh
 };
 
 
-export const rename = function(token, path, isPathShared = false, newName, isFile, callback) {
+export const rename = function(token, path, newName, metadata, isFile, isPathShared = false,) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + (isFile ? 'nfs/file/metadata/' : 'nfs/directory/') + rootPath + '/' + path;
+
     var payload = {
         method: 'PUT',
-        headers: {
-            Authorization: 'Bearer ' + token
+        headers: 
+        {
+            'Authorization'  : 'Bearer ' + token ,
+            'Content-Type' : 'application/json'
         },
-        body: {
-            name: newName
-        }
+        body: JSON.stringify ({
+            name: newName,
+        })
     };
+    
     return fetch( url, payload)
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.debug('safe-js.nfs.deleteDirectory failed with status ' + response.status + ' ' + response.statusText );
+            console.log( "response:::",response );
+            throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -268,9 +278,9 @@ export const rename = function(token, path, isPathShared = false, newName, isFil
 };
 
 export const renameDirectory = function(token, dirPath, isPathShared = false, newName, callback) {
-    rename(dirPath, isPathShared, newName, false, callback);
+    return rename(dirPath, isPathShared, newName, false, callback);
 };
 
 export const renameFile = function(oldPath, isPathShared = false, newPath, callback) {
-    rename(dirPath, isPathShared, newName, true, callback);
+    return rename(dirPath, isPathShared, newName, true, callback);
 };
