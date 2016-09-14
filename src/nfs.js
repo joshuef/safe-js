@@ -22,7 +22,7 @@ export const manifest = {
     createFile              : 'promise',
     getDir                  : 'promise',
     getFile                 : 'promise',
-    modifyFileContent       : 'promise',
+    // modifyFileContent       : 'promise',
     rename                  : 'promise',
     renameDir               : 'promise',
     renameFile              : 'promise'
@@ -167,8 +167,7 @@ export const getFile = function( token, filePath, isPathShared = false, download
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
         headers: {
-            'Authorization':'Bearer ' + token,
-            // 'Content-Type':'text/plain'
+            'Authorization':'Bearer ' + token
         }
     };
     
@@ -192,71 +191,11 @@ export const getFile = function( token, filePath, isPathShared = false, download
                 return response;
             }
         })
-        // .catch( error =>
-        // {
-        //     throw new Error( "SAFE getFile response error" , error );
-        // })
 
 };
 
 
-// perhaps data object with mime type in there
-export const modifyFileContent = function(token, filePath, dataToWrite, isPathShared = false, offset = 0)
-{
-    var self = this;
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-
-    
-    const payload =
-    {
-        method: 'PUT',
-        headers:
-        {
-            'Content-Type': 'text/plain',
-            Authorization: 'Bearer ' + token
-        },
-        body: JSON.stringify( dataToWrite )
-    };
-
-    return fetch(url, payload)
-    .then( response =>
-        {
-            let parsedResponse;
-
-            if (response.status !== 200)
-            {
-                throw new Error( 'SAFE modifyFileContent failed with status ' + response.status + ' ' + response.statusText );
-
-                var errMsg = response.body;
-
-                if (!response.status)
-                {
-                    let errObject = {
-                        errorCode: 400,
-                        description: 'Request connection closed abruptly'
-                    }
-                    throw new Error( errObject );
-
-
-                }
-            }
-            if( response.status === 200 )
-            {
-                return response.json().then( json =>
-                    {
-                        response.__parsedResponseBody__ = json
-                        return response;
-                    })
-            }
-            else {
-                return response;
-            }
-     })
-};
-
-
-export const rename = function(token, path, newName, metadata, isFile, isPathShared = false,) {
+export const rename = function(token, path, newName, isFile, metadata, isPathShared = false,) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + (isFile ? 'nfs/file/metadata/' : 'nfs/directory/') + rootPath + '/' + path;
 
@@ -272,8 +211,14 @@ export const rename = function(token, path, newName, metadata, isFile, isPathSha
         })
     };
     
+    if( metadata )
+    {
+        payload.headers.Metadata = metadata;
+    }
+    
     return fetch( url, payload)
     .then( (response) => {
+        
         if (response.status !== 200 && response.status !== 206)
         {
             throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText );

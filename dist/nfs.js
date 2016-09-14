@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.renameFile = exports.renameDir = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.deleteFile = exports.deleteDir = exports.createFile = exports.createDir = exports.manifest = undefined;
+exports.renameFile = exports.renameDir = exports.rename = exports.getFile = exports.getDir = exports.deleteFile = exports.deleteDir = exports.createFile = exports.createDir = exports.manifest = undefined;
 
 var _fs = require('fs');
 
@@ -34,7 +34,7 @@ var manifest = exports.manifest = {
     createFile: 'promise',
     getDir: 'promise',
     getFile: 'promise',
-    modifyFileContent: 'promise',
+    // modifyFileContent       : 'promise',
     rename: 'promise',
     renameDir: 'promise',
     renameFile: 'promise'
@@ -191,58 +191,9 @@ var getFile = exports.getFile = function getFile(token, filePath) {
             return response;
         }
     });
-    // .catch( error =>
-    // {
-    //     throw new Error( "SAFE getFile response error" , error );
-    // })
 };
 
-// perhaps data object with mime type in there
-var modifyFileContent = exports.modifyFileContent = function modifyFileContent(token, filePath, dataToWrite) {
-    var isPathShared = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
-    var offset = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
-
-    var self = this;
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-
-    var payload = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'text/plain',
-            Authorization: 'Bearer ' + token
-        },
-        body: JSON.stringify(dataToWrite)
-    };
-
-    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-        var parsedResponse = void 0;
-
-        if (response.status !== 200) {
-            throw new Error('SAFE modifyFileContent failed with status ' + response.status + ' ' + response.statusText);
-
-            var errMsg = response.body;
-
-            if (!response.status) {
-                var errObject = {
-                    errorCode: 400,
-                    description: 'Request connection closed abruptly'
-                };
-                throw new Error(errObject);
-            }
-        }
-        if (response.status === 200) {
-            return response.json().then(function (json) {
-                response.__parsedResponseBody__ = json;
-                return response;
-            });
-        } else {
-            return response;
-        }
-    });
-};
-
-var rename = exports.rename = function rename(token, path, newName, metadata, isFile) {
+var rename = exports.rename = function rename(token, path, newName, isFile, metadata) {
     var isPathShared = arguments.length <= 5 || arguments[5] === undefined ? false : arguments[5];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
@@ -259,7 +210,12 @@ var rename = exports.rename = function rename(token, path, newName, metadata, is
         })
     };
 
+    if (metadata) {
+        payload.headers.Metadata = metadata;
+    }
+
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+
         if (response.status !== 200 && response.status !== 206) {
             throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText);
         }
