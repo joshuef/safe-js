@@ -17,14 +17,14 @@ const SERVER = 'http://localhost:8100/' + VERSION + '/';
 */
 export const manifest = {
     createDir               : 'promise',
-    deleteDirectory         : 'promise',
+    deleteDir               : 'promise',
     deleteFile              : 'promise',
     createFile              : 'promise',
     getDir                  : 'promise',
     getFile                 : 'promise',
     modifyFileContent       : 'promise',
     rename                  : 'promise',
-    renameDirectory         : 'promise',
+    renameDir               : 'promise',
     renameFile              : 'promise'
 }
 
@@ -60,7 +60,7 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     });
 };
 
-export const deleteDirectory = function( token, dirPath, isPathShared = false ) {
+export const deleteDir = function( token, dirPath, isPathShared = false ) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
@@ -73,7 +73,7 @@ export const deleteDirectory = function( token, dirPath, isPathShared = false ) 
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            throw new Error( 'SAFE deleteDirectory failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE deleteDir failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return response
@@ -279,7 +279,7 @@ export const rename = function(token, path, newName, metadata, isFile, isPathSha
     });
 };
 
-export const renameDirectory = function(token, dirPath, isPathShared = false, newName, callback) {
+export const renameDir = function(token, dirPath, isPathShared = false, newName, callback) {
     return rename(dirPath, isPathShared, newName, false, callback);
 };
 
