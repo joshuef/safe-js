@@ -17,15 +17,7 @@ var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
 
-// let fakeLocalStorage = {
-//     getItem : function(item) {
-//         return this[ item ];
-//     },
-//     setItem : function( key, item ) {
-//         this[ key ] = item;
-//     }
-// };
-
+// localStorage shim for node
 if (typeof localStorage === 'undefined') {
     var boom = 'aye';
     var localStorage = {
@@ -40,8 +32,6 @@ if (typeof localStorage === 'undefined') {
         }
     };
 }
-
-// let storage = localStorage || fakeLocalStorage;
 
 /*
 * Manifest for Beaker: 
@@ -167,7 +157,6 @@ var authorise = exports.authorise = function authorise() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var packageData = arguments[1];
 
-    console.log("Authorization", boom, localStorage);
     return isTokenValid(tokenKey).then(function (response) {
 
         if (!response || response.error || response.status === 401) {

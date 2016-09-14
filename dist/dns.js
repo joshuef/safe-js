@@ -24,7 +24,7 @@ var manifest = exports.manifest = {
   addService: 'promise'
 };
 
-var createPublicId = exports.createPublicId = function createPublicId(token, longName, callback) {
+var createPublicId = exports.createPublicId = function createPublicId(token, longName) {
   var url = SERVER + 'dns/' + longName;
   var payload = {
     method: 'POST',
@@ -42,7 +42,7 @@ var createPublicId = exports.createPublicId = function createPublicId(token, lon
 };
 
 // get dns list
-var getDns = exports.getDns = function getDns(token, callback) {
+var getDns = exports.getDns = function getDns(token) {
   var url = SERVER + 'dns';
   var payload = {
     method: 'GET',
@@ -60,7 +60,7 @@ var getDns = exports.getDns = function getDns(token, callback) {
 };
 
 // get service
-var getServices = exports.getServices = function getServices(token, longName, callback) {
+var getServices = exports.getServices = function getServices(token, longName) {
   var url = SERVER + 'dns/' + longName;
   var payload = {
     method: 'GET',
@@ -78,7 +78,7 @@ var getServices = exports.getServices = function getServices(token, longName, ca
 };
 
 // add service
-var addService = exports.addService = function addService(token, longName, serviceName, isPathShared, serviceHomeDirPath, callback) {
+var addService = exports.addService = function addService(token, longName, serviceName, isPathShared, serviceHomeDirPath) {
   var url = SERVER + 'dns';
   var payload = {
     method: 'PUT',

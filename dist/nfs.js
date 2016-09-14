@@ -43,7 +43,6 @@ var manifest = exports.manifest = {
 // create new directory
 var createDir = exports.createDir = function createDir(token, dirPath, isPrivate, userMetadata) {
     var isPathShared = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
-    var callback = arguments[5];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     dirPath = dirPath[0] === '/' ? dirPath.slice(1) : dirPath;
@@ -72,7 +71,6 @@ var createDir = exports.createDir = function createDir(token, dirPath, isPrivate
 
 var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, dirPath) {
     var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-    var callback = arguments[3];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
@@ -93,7 +91,6 @@ var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, 
 
 var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
     var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-    var callback = arguments[3];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
@@ -114,7 +111,6 @@ var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
 
 var createFile = exports.createFile = function createFile(token, filePath, dataToWrite, metadata) {
     var isPathShared = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
-    var callback = arguments[5];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
