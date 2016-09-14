@@ -14,7 +14,7 @@ export const manifest = {
 }
 
 
- export const createPublicId = function( token, longName, callback) {
+ export const createPublicId = function( token, longName ) {
     let url = SERVER + 'dns/' + longName;
     var payload = {
       method: 'POST',
@@ -34,7 +34,7 @@ export const manifest = {
   };
 
   // get dns list
- export const getDns = function( token, callback) {
+ export const getDns = function( token ) {
     let url = SERVER + 'dns';
     var payload = {
       method: 'GET',
@@ -54,7 +54,7 @@ export const manifest = {
   };
 
   // get service
- export const getServices = function( token, longName, callback) {
+ export const getServices = function( token, longName ) {
     let url = SERVER + 'dns/' + longName;
     var payload = {
       method: 'GET',
@@ -74,7 +74,7 @@ export const manifest = {
   };
 
   // add service
- export const addService = function( token, longName, serviceName, isPathShared, serviceHomeDirPath, callback) {
+ export const addService = function( token, longName, serviceName, isPathShared, serviceHomeDirPath ) {
     let url = SERVER + 'dns';
     var payload = {
       method: 'PUT',
