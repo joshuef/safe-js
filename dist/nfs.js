@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.renameFile = exports.renameDirectory = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.createFile = exports.deleteFile = exports.deleteDirectory = exports.createDir = exports.manifest = undefined;
+exports.renameFile = exports.renameDir = exports.rename = exports.modifyFileContent = exports.getFile = exports.getDir = exports.deleteFile = exports.deleteDir = exports.createFile = exports.createDir = exports.manifest = undefined;
 
 var _fs = require('fs');
 
@@ -29,14 +29,14 @@ var SERVER = 'http://localhost:8100/' + VERSION + '/';
 */
 var manifest = exports.manifest = {
     createDir: 'promise',
-    deleteDirectory: 'promise',
+    deleteDir: 'promise',
     deleteFile: 'promise',
     createFile: 'promise',
     getDir: 'promise',
     getFile: 'promise',
     modifyFileContent: 'promise',
     rename: 'promise',
-    renameDirectory: 'promise',
+    renameDir: 'promise',
     renameFile: 'promise'
 };
 
@@ -69,7 +69,41 @@ var createDir = exports.createDir = function createDir(token, dirPath, isPrivate
     });
 };
 
-var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, dirPath) {
+var createFile = exports.createFile = function createFile(token, filePath, dataToWrite) {
+    var dataType = arguments.length <= 3 || arguments[3] === undefined ? 'text/plain' : arguments[3];
+    var dataLength = arguments[4];
+    var metadata = arguments[5];
+    var isPathShared = arguments.length <= 6 || arguments[6] === undefined ? false : arguments[6];
+
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
+    var payload = {
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Length': dataLength || dataToWrite.length,
+            'Content-Type': dataType
+
+        },
+        body: dataToWrite
+    };
+
+    if (metadata) {
+        payload.headers.Metadata = metadata;
+    }
+
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 206) {
+            throw new Error('SAFE createFile failed with status ' + response.status + ' ' + response.statusText);
+        }
+
+        if (response.status === 200) {
+            return response;
+        }
+    });
+};
+
+var deleteDir = exports.deleteDir = function deleteDir(token, dirPath) {
     var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
@@ -82,7 +116,7 @@ var deleteDirectory = exports.deleteDirectory = function deleteDirectory(token, 
     };
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            throw new Error('SAFE deleteDirectory failed with status ' + response.status + ' ' + response.statusText);
+            throw new Error('SAFE deleteDir failed with status ' + response.status + ' ' + response.statusText);
         }
 
         return response;
@@ -106,36 +140,6 @@ var deleteFile = exports.deleteFile = function deleteFile(token, filePath) {
         }
 
         return response;
-    });
-};
-
-var createFile = exports.createFile = function createFile(token, filePath, dataToWrite, metadata) {
-    var isPathShared = arguments.length <= 4 || arguments[4] === undefined ? false : arguments[4];
-
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var payload = {
-        method: 'POST',
-        headers: {
-            Authorization: 'Bearer ' + token,
-            metabody: metadata
-        },
-        body: JSON.stringify(dataToWrite)
-    };
-
-    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-        if (response.status !== 200 && response.status !== 206) {
-            throw new Error('SAFE createFile failed with status ' + response.status + ' ' + response.statusText);
-        }
-
-        if (response.status === 200) {
-            return response.json().then(function (json) {
-                response.__parsedResponseBody__ = json;
-                return response;
-            });
-        } else {
-            return response;
-        }
     });
 };
 
@@ -168,8 +172,7 @@ var getFile = exports.getFile = function getFile(token, filePath) {
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
         headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'text/plain'
+            'Authorization': 'Bearer ' + token
         }
     };
 
@@ -181,14 +184,17 @@ var getFile = exports.getFile = function getFile(token, filePath) {
         if (response.status === 200) {
             return response.json().then(function (json) {
                 response.__parsedResponseBody__ = json;
+
                 return response;
             });
         } else {
             return response;
         }
-    }).catch(function (error) {
-        throw new Error("SAFE getFile response error", error);
     });
+    // .catch( error =>
+    // {
+    //     throw new Error( "SAFE getFile response error" , error );
+    // })
 };
 
 // perhaps data object with mime type in there
@@ -255,7 +261,6 @@ var rename = exports.rename = function rename(token, path, newName, metadata, is
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
         if (response.status !== 200 && response.status !== 206) {
-            console.log("response:::", response);
             throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText);
         }
 
@@ -263,7 +268,7 @@ var rename = exports.rename = function rename(token, path, newName, metadata, is
     });
 };
 
-var renameDirectory = exports.renameDirectory = function renameDirectory(token, dirPath) {
+var renameDir = exports.renameDir = function renameDir(token, dirPath) {
     var isPathShared = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
     var newName = arguments[3];
     var callback = arguments[4];

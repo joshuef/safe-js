@@ -60,6 +60,44 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     });
 };
 
+
+export const createFile = function( token, filePath, dataToWrite, dataType = 'text/plain', dataLength, metadata, isPathShared = false )
+{
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
+    var payload = {
+        method: 'POST',
+        headers: {
+            Authorization       : 'Bearer ' + token,
+            'Content-Length'    : dataLength || dataToWrite.length,
+            'Content-Type'      : dataType
+
+        },
+        body: dataToWrite
+    };
+    
+    if( metadata )
+    {
+        payload.headers.Metadata = metadata;
+    }
+    
+    return fetch( url, payload )
+    .then( (response) => {
+        if (response.status !== 200 && response.status !== 206)
+        {
+            throw new Error( 'SAFE createFile failed with status ' + response.status + ' ' + response.statusText );
+        }
+
+        if( response.status === 200 )
+        {
+            return response;
+        }
+
+    });
+};
+
+
+
 export const deleteDir = function( token, dirPath, isPathShared = false ) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
@@ -101,41 +139,6 @@ export const deleteFile = function( token, filePath, isPathShared = false )
     });
 };
 
-export const createFile = function( token, filePath, dataToWrite, metadata, isPathShared = false )
-{
-    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
-    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
-    var payload = {
-        method: 'POST',
-        headers: {
-            Authorization: 'Bearer ' + token,
-            metabody: metadata
-        },
-        body: JSON.stringify( dataToWrite )
-    };
-
-    return fetch( url, payload )
-    .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE createFile failed with status ' + response.status + ' ' + response.statusText );
-        }
-
-        if( response.status === 200 )
-        {
-            return response.json().then( json =>
-                {
-                    response.__parsedResponseBody__ = json
-                    return response;
-                })
-        }
-        else {
-            return response;
-        }
-
-    });
-};
-
 
 // get specific directory
 export const getDir = function(token, dirPath, isPathShared = false) {
@@ -165,10 +168,10 @@ export const getFile = function( token, filePath, isPathShared = false, download
     var payload = {
         headers: {
             'Authorization':'Bearer ' + token,
-            'Content-Type':'text/plain'
+            // 'Content-Type':'text/plain'
         }
     };
-
+    
     return fetch(url, payload)
         .then( (response) => {
             if (response.status !== 200 && response.status !== 206)
@@ -181,16 +184,18 @@ export const getFile = function( token, filePath, isPathShared = false, download
                 return response.json().then( json =>
                     {
                         response.__parsedResponseBody__ = json
+                        
                         return response;
                     })
             }
             else {
                 return response;
             }
-        }).catch( error =>
-        {
-            throw new Error( "SAFE getFile response error" , error );
         })
+        // .catch( error =>
+        // {
+        //     throw new Error( "SAFE getFile response error" , error );
+        // })
 
 };
 
@@ -271,7 +276,6 @@ export const rename = function(token, path, newName, metadata, isFile, isPathSha
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)
         {
-            console.log( "response:::",response );
             throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText );
         }
 
