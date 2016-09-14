@@ -17,7 +17,31 @@ var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
 
-var fakeLocalStorage = {};
+// let fakeLocalStorage = {
+//     getItem : function(item) {
+//         return this[ item ];
+//     },
+//     setItem : function( key, item ) {
+//         this[ key ] = item;
+//     }
+// };
+
+if (typeof localStorage === 'undefined') {
+    var boom = 'aye';
+    var localStorage = {
+        getItem: function getItem(item) {
+            return this[item];
+        },
+        setItem: function setItem(key, item) {
+            this[key] = item;
+        },
+        clear: function clear() {
+            return true;
+        }
+    };
+}
+
+// let storage = localStorage || fakeLocalStorage;
 
 /*
 * Manifest for Beaker: 
@@ -36,21 +60,7 @@ var manifest = exports.manifest = {
 var getAuthToken = exports.getAuthToken = function getAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
 
-    var storage = void 0;
-
-    // TODO: shim localstorage properly.
-
-    if (typeof localStorage !== 'undefined') {
-        storage = localStorage;
-    } else {
-        storage = fakeLocalStorage;
-    }
-
-    if (storage.getItem) {
-        return storage.getItem(tokenKey);
-    } else {
-        return storage[tokenKey];
-    }
+    return localStorage.getItem(tokenKey);
 };
 
 var getUserLongName = exports.getUserLongName = function getUserLongName() {
@@ -64,20 +74,7 @@ var setAuthToken = exports.setAuthToken = function setAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var token = arguments[1];
 
-    var storage = void 0;
-
-    // TODO: shim localstorage properly.
-    if (typeof localStorage !== 'undefined') {
-        storage = localStorage;
-    } else {
-        storage = fakeLocalStorage;
-    }
-
-    if (storage.setItem) {
-        storage.setItem(tokenKey, token);
-    } else {
-        storage[tokenKey] = token;
-    }
+    localStorage.setItem(tokenKey, token);
 };
 
 var setUserLongName = exports.setUserLongName = function setUserLongName() {
@@ -170,6 +167,7 @@ var authorise = exports.authorise = function authorise() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
     var packageData = arguments[1];
 
+    console.log("Authorization", boom, localStorage);
     return isTokenValid(tokenKey).then(function (response) {
 
         if (!response || response.error || response.status === 401) {

@@ -6,8 +6,24 @@ const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
 const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
 
-let fakeLocalStorage = {};
 
+// localStorage shim for node
+if( typeof localStorage === 'undefined' )
+{
+    var boom = 'aye';
+    var localStorage = {
+        getItem : function(item) {
+            return this[ item ];
+        },
+        setItem : function( key, item ) {
+            this[ key ] = item;
+        },
+        clear : function()
+        {
+            return true;
+        }
+    };
+}
 
 /*
 * Manifest for Beaker: 
@@ -27,25 +43,7 @@ export const manifest = {
 
 export const getAuthToken = function( tokenKey = TOKEN_KEY )
 {
-    let storage;   
-
-    // TODO: shim localstorage properly.
-    
-    if( typeof localStorage !== 'undefined' )
-    {
-        storage = localStorage;    
-    }
-    else {
-        storage = fakeLocalStorage;
-    }
-
-    if( storage.getItem )
-    {
-        return storage.getItem( tokenKey );
-    }
-    else {
-        return  storage[ tokenKey ]
-    }
+    return localStorage.getItem( tokenKey );
 };
 
 export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStorage ) {
@@ -54,25 +52,7 @@ export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStora
 
 export const setAuthToken = function( tokenKey = TOKEN_KEY, token)
 {
-    let storage;   
-    
-    // TODO: shim localstorage properly.
-    if( typeof localStorage !== 'undefined' )
-    {
-        storage = localStorage;    
-        
-    }
-    else {
-        storage = fakeLocalStorage;
-    }    
-    
-    if( storage.setItem )
-    {
-        storage.setItem( tokenKey, token );
-    }
-    else {
-        storage[ tokenKey ] = token;
-    }
+    localStorage.setItem( tokenKey, token );
 };
 
 export const setUserLongName = function(longNameKey = LONG_NAME_KEY, longName) {

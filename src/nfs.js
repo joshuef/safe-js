@@ -31,7 +31,8 @@ export const manifest = {
 
 
 // create new directory
-export const createDir = function( token, dirPath, isPrivate, userMetadata, isPathShared = false, callback) {
+export const createDir = function( token, dirPath, isPrivate, userMetadata, isPathShared = false) 
+{
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     dirPath = dirPath[0] === '/' ? dirPath.slice(1) : dirPath;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
@@ -59,7 +60,7 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     });
 };
 
-export const deleteDirectory = function( token, dirPath, isPathShared = false, callback) {
+export const deleteDirectory = function( token, dirPath, isPathShared = false ) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/directory/' + rootPath + '/' + dirPath;
     var payload = {
@@ -79,7 +80,8 @@ export const deleteDirectory = function( token, dirPath, isPathShared = false, c
     });
 };
 
-export const deleteFile = function( token, filePath, isPathShared = false, callback) {
+export const deleteFile = function( token, filePath, isPathShared = false ) 
+{
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
@@ -99,7 +101,7 @@ export const deleteFile = function( token, filePath, isPathShared = false, callb
     });
 };
 
-export const createFile = function( token, filePath, dataToWrite, metadata, isPathShared = false, callback)
+export const createFile = function( token, filePath, dataToWrite, metadata, isPathShared = false )
 {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;

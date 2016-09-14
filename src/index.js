@@ -1,3 +1,3 @@
 export * as nfs from './nfs';
 export * as dns from './dns';
-export * as utils from './utils';
+export * as auth from './auth';
