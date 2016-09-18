@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.authorise = exports.isTokenValid = exports.sendAuthorisationRequest = exports.setUserLongName = exports.setAuthToken = exports.getUserLongName = exports.getAuthToken = exports.manifest = undefined;
+exports.sendAuthorisationRequest = exports.setUserLongName = exports.setAuthToken = exports.isTokenValid = exports.getUserLongName = exports.getAuthToken = exports.authorise = exports.manifest = undefined;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -47,6 +47,33 @@ var manifest = exports.manifest = {
     authorise: 'promise'
 };
 
+/**
+ * authorise the application on the SAFE Network
+ * @param  { object }  packageData      safeAuth object 
+ *                                      {
+                                         name: '',
+                                         id: '',
+                                         version: '',
+                                         vendor: ''
+                                        }
+ * @param  { string }  [tokenKey=TOKEN_KEY] key to save token as in localStorage (in a browser)
+ * @param  {Boolean} isTokenValid         [OPTIONAL] Token validator function
+ * @return {[type]}                       [description]
+ */
+var authorise = exports.authorise = function authorise(packageData) {
+    var tokenKey = arguments.length <= 1 || arguments[1] === undefined ? TOKEN_KEY : arguments[1];
+
+    var token = getAuthToken(tokenKey);
+
+    return isTokenValid(token).then(function (response) {
+        if (!response) {
+            localStorage.clear();
+            return sendAuthorisationRequest(packageData, tokenKey);
+        }
+        return response;
+    });
+};
+
 var getAuthToken = exports.getAuthToken = function getAuthToken() {
     var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
 
@@ -58,6 +85,35 @@ var getUserLongName = exports.getUserLongName = function getUserLongName() {
     var localStorage = arguments[1];
 
     return localStorage.getItem(longNameKey);
+};
+
+/**
+ * Check if a token is valid with the current launcher
+ * @param  {string}  token auth token for SAFE
+ * @return {Boolean}      is the token valid?
+ */
+var isTokenValid = exports.isTokenValid = function isTokenValid(token) {
+    var url = SERVER + 'auth';
+    var payload = {
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    };
+
+    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+        if (response.status !== 200 && response.status !== 401) {
+            throw new Error('Token not valid. SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText);
+            return false;
+        } else if (response.status === 401) {
+            return false;
+        } else if (response.status === 200) {
+
+            return true;
+        }
+
+        return response;
+    });
 };
 
 var setAuthToken = exports.setAuthToken = function setAuthToken() {
@@ -74,8 +130,9 @@ var setUserLongName = exports.setUserLongName = function setUserLongName() {
     localStorage.setItem(longNameKey, longName);
 };
 
-var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendAuthorisationRequest(tokenKey) {
-    var packageData = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendAuthorisationRequest() {
+    var packageData = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var tokenKey = arguments.length <= 1 || arguments[1] === undefined ? TOKEN_KEY : arguments[1];
 
     var url = SERVER + 'auth';
 
@@ -109,6 +166,7 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
 
         return parsedResponse || response;
     }).then(function (response) {
+
         if (response.status !== 200 && response.status !== 206) {
             throw new Error('SAFE sendAuthorisationRequest failed with status ' + response.status + ' ' + response.statusText);
         }
@@ -128,41 +186,6 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
 
         setAuthToken(tokenKey, receivedToken);
 
-        return response;
-    });
-};
-
-var isTokenValid = exports.isTokenValid = function isTokenValid() {
-    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
-
-    var url = SERVER + 'auth';
-    var token = getAuthToken(tokenKey);
-    var payload = {
-        method: 'GET',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    };
-
-    return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-        if (response.status !== 200 && response.status !== 401) {
-            throw new Error('SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText);
-        }
-        return response;
-    });
-};
-
-// authorise application
-var authorise = exports.authorise = function authorise() {
-    var tokenKey = arguments.length <= 0 || arguments[0] === undefined ? TOKEN_KEY : arguments[0];
-    var packageData = arguments[1];
-
-    return isTokenValid(tokenKey).then(function (response) {
-
-        if (!response || response.error || response.status === 401) {
-            localStorage.clear();
-            return sendAuthorisationRequest(tokenKey, packageData);
-        }
         return response;
     });
 };

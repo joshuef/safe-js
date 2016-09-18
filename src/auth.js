@@ -40,6 +40,36 @@ export const manifest = {
 }
 
 
+/**
+ * authorise the application on the SAFE Network
+ * @param  { object }  packageData      safeAuth object 
+ *                                      {
+                                         name: '',
+                                         id: '',
+                                         version: '',
+                                         vendor: ''
+                                        }
+ * @param  { string }  [tokenKey=TOKEN_KEY] key to save token as in localStorage (in a browser)
+ * @param  {Boolean} isTokenValid         [OPTIONAL] Token validator function
+ * @return {[type]}                       [description]
+ */
+export const authorise = function( packageData, tokenKey = TOKEN_KEY )
+{   
+    let token = getAuthToken( tokenKey );
+
+    return isTokenValid( token )
+        .then( response => 
+        {
+            if ( !response ) 
+            {
+                localStorage.clear();
+                return sendAuthorisationRequest( packageData, tokenKey );
+            }
+            return response;
+        });
+};
+
+
 
 export const getAuthToken = function( tokenKey = TOKEN_KEY )
 {
@@ -50,6 +80,44 @@ export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStora
     return localStorage.getItem(longNameKey);
 };
 
+/**
+ * Check if a token is valid with the current launcher
+ * @param  {string}  token auth token for SAFE
+ * @return {Boolean}      is the token valid?
+ */
+export const isTokenValid = function( token ) 
+{
+    let url         = SERVER + 'auth';
+    var payload     = {
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    };
+
+    return fetch( url, payload )
+    .then( response => 
+    {
+        if (response.status !== 200 && response.status !== 401  )
+        {
+            throw new Error( 'Token not valid. SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText );
+            return false;
+        }
+        else if( response.status === 401 )
+        {
+            return false;
+        }
+        else if( response.status === 200 )
+        {
+            
+            return true;
+        }
+        
+        return response;
+    });
+};
+
+
 export const setAuthToken = function( tokenKey = TOKEN_KEY, token)
 {
     localStorage.setItem( tokenKey, token );
@@ -59,7 +127,7 @@ export const setUserLongName = function(longNameKey = LONG_NAME_KEY, longName) {
     localStorage.setItem(longNameKey, longName);
 };
 
-export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
+export const sendAuthorisationRequest = function( packageData = {}, tokenKey = TOKEN_KEY )
 {
     const url = SERVER + 'auth';
 
@@ -82,20 +150,24 @@ export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
     };
 
     return fetch( url, payload )
-    .then((response) => {
+    .then( response => 
+    {
           let parsedResponse
-          if(response.status == 200) {
+          if(response.status == 200) 
+          {
             parsedResponse = response.json()
-              .then((json) => {
-                response.__parsedResponseBody__ = json
-
-                return response
-              })
+                .then((json) => 
+                {
+                    response.__parsedResponseBody__ = json
+                    
+                    return response;
+                })
           }
 
           return (parsedResponse || response)
     })
     .then( response => {
+        
         if (response.status !== 200 && response.status !== 206)
         {
             throw new Error( 'SAFE sendAuthorisationRequest failed with status ' +
@@ -122,38 +194,4 @@ export const sendAuthorisationRequest = function( tokenKey, packageData = {} )
 
         return response
     });
-};
-
-export const isTokenValid = function( tokenKey = TOKEN_KEY  ) {
-    let url = SERVER + 'auth';
-    let token = getAuthToken( tokenKey );
-    var payload = {
-        method: 'GET',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
-    };
-
-    return fetch( url, payload )
-    .then( (response) => {
-        if (response.status !== 200 && response.status !== 401  )
-        {
-            throw new Error( 'SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText );
-        }
-        return response;
-    });
-};
-
-// authorise application
-export const authorise = function( tokenKey = TOKEN_KEY, packageData )
-{
-    return isTokenValid( tokenKey )
-        .then( response => {
-
-            if ( !response || response.error || response.status === 401 ) {
-                localStorage.clear();
-                return sendAuthorisationRequest( tokenKey, packageData );
-            }
-            return response;
-        });
 };

@@ -17,7 +17,8 @@ module.exports = function(config) {
         
         files: [
             // all files ending in "_test"
-            {pattern: 'test/**/*test.js', watched: false}
+            {pattern: 'test/**/*test.js', watched: false},
+            'node_modules/babel-polyfill/dist/polyfill.js'
             // each file acts as entry point for the webpack configuration
         ],
         
@@ -39,8 +40,8 @@ module.exports = function(config) {
         
         preprocessors: {
             // add webpack as preprocessor
-            'src/**/*.js': ['webpack'],
-            'test/**/*test.js': ['webpack']
+            'src/**/*.js': ['webpack', 'sourcemap'],
+            'test/**/*test.js': ['webpack', 'sourcemap']
         },
         
         
@@ -51,6 +52,7 @@ module.exports = function(config) {
             // webpack watches dependencies
             
             // webpack configuration
+            devtool: 'inline-source-map',
             module : {
                 
                 loaders : [
@@ -60,6 +62,7 @@ module.exports = function(config) {
                     }
                 ]
             }
+
         },
         
         notifyReporter: {
