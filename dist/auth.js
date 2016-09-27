@@ -9,10 +9,10 @@ var _isomorphicFetch = require('isomorphic-fetch');
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var VERSION = '0.5';
-var SERVER = 'http://localhost:8100/' + VERSION + '/';
 var TOKEN_KEY = 'MaidSafeDemoAppTokenReplaceThis';
 var LONG_NAME_KEY = 'MaidSafeDemoAppLongNameReplaceThis';
 var dnsList = null;
@@ -93,7 +93,7 @@ var getUserLongName = exports.getUserLongName = function getUserLongName() {
  * @return {Boolean}      is the token valid?
  */
 var isTokenValid = exports.isTokenValid = function isTokenValid(token) {
-    var url = SERVER + 'auth';
+    var url = _utils.SERVER + 'auth';
     var payload = {
         method: 'GET',
         headers: {
@@ -134,7 +134,7 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
     var packageData = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
     var tokenKey = arguments.length <= 1 || arguments[1] === undefined ? TOKEN_KEY : arguments[1];
 
-    var url = SERVER + 'auth';
+    var url = _utils.SERVER + 'auth';
 
     var authData = {
         app: {
@@ -143,7 +143,7 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
             version: packageData.version,
             vendor: packageData.vendor
         },
-        permissions: []
+        permissions: packageData.permissions
     };
 
     var payload = {
@@ -155,16 +155,7 @@ var sendAuthorisationRequest = exports.sendAuthorisationRequest = function sendA
     };
 
     return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-        var parsedResponse = void 0;
-        if (response.status == 200) {
-            parsedResponse = response.json().then(function (json) {
-                response.__parsedResponseBody__ = json;
-
-                return response;
-            });
-        }
-
-        return parsedResponse || response;
+        return (0, _utils.parseResponse)(response);
     }).then(function (response) {
 
         if (response.status !== 200 && response.status !== 206) {

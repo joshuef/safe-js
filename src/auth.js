@@ -1,7 +1,6 @@
 import fetch    from 'isomorphic-fetch';
+import {parseResponse, SERVER} from './utils';
 
-const VERSION           = '0.5';
-const SERVER            = 'http://localhost:8100/' + VERSION + '/';
 const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
 const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
@@ -138,8 +137,8 @@ export const sendAuthorisationRequest = function( packageData = {}, tokenKey = T
             version: packageData.version,
             vendor: packageData.vendor
         },
-        permissions: []
-    }
+        permissions: packageData.permissions
+    };
 
     var payload = {
         method: 'POST',
@@ -152,19 +151,7 @@ export const sendAuthorisationRequest = function( packageData = {}, tokenKey = T
     return fetch( url, payload )
     .then( response => 
     {
-          let parsedResponse
-          if(response.status == 200) 
-          {
-            parsedResponse = response.json()
-                .then((json) => 
-                {
-                    response.__parsedResponseBody__ = json
-                    
-                    return response;
-                })
-          }
-
-          return (parsedResponse || response)
+        return parseResponse(response);
     })
     .then( response => {
         

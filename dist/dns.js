@@ -9,10 +9,10 @@ var _isomorphicFetch = require('isomorphic-fetch');
 
 var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var VERSION = '0.5';
-var SERVER = 'http://localhost:8100/' + VERSION + '/';
 /*
 * Manifest for Beaker: 
 * https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
@@ -25,7 +25,7 @@ var manifest = exports.manifest = {
 };
 
 var createPublicId = exports.createPublicId = function createPublicId(token, longName) {
-  var url = SERVER + 'dns/' + longName;
+  var url = _utils.SERVER + 'dns/' + longName;
   var payload = {
     method: 'POST',
     headers: {
@@ -43,7 +43,7 @@ var createPublicId = exports.createPublicId = function createPublicId(token, lon
 
 // get dns list
 var getDns = exports.getDns = function getDns(token) {
-  var url = SERVER + 'dns';
+  var url = _utils.SERVER + 'dns';
   var payload = {
     method: 'GET',
     headers: {
@@ -51,17 +51,17 @@ var getDns = exports.getDns = function getDns(token) {
     }
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-    if (response.status !== 200 && response.status !== 206) {
+    if (response.status !== 200) {
       throw new Error('SAFE getDns failed with status ' + response.status + ' ' + response.statusText);
     }
 
-    return response;
+    return (0, _utils.parseResponse)(response);
   });
 };
 
 // get service
 var getServices = exports.getServices = function getServices(token, longName) {
-  var url = SERVER + 'dns/' + longName;
+  var url = _utils.SERVER + 'dns/' + longName;
   var payload = {
     method: 'GET',
     headers: {
@@ -79,7 +79,7 @@ var getServices = exports.getServices = function getServices(token, longName) {
 
 // add service
 var addService = exports.addService = function addService(token, longName, serviceName, isPathShared, serviceHomeDirPath) {
-  var url = SERVER + 'dns';
+  var url = _utils.SERVER + 'dns';
   var payload = {
     method: 'PUT',
     headers: {

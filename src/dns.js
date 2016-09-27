@@ -1,7 +1,6 @@
 import fetch    from 'isomorphic-fetch';
+import {parseResponse, SERVER} from './utils';
 
-const VERSION = '0.5';
-const SERVER = 'http://localhost:8100/' + VERSION + '/';
 /*
 * Manifest for Beaker: 
 * https://github.com/pfrazee/beaker/blob/master/doc/authoring-plugins.md#api-manifests
@@ -11,7 +10,7 @@ export const manifest = {
     getDns              : 'promise',
     getServices         : 'promise',
     addService          : 'promise',
-}
+};
 
 
  export const createPublicId = function( token, longName ) {
@@ -29,7 +28,7 @@ export const manifest = {
             throw new Error( 'SAFE createPublicId failed with status ' + response.status + ' ' + response.statusText );
         }
 
-        return response
+        return response;
     });
   };
 
@@ -44,12 +43,12 @@ export const manifest = {
     };
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
+        if (response.status !== 200)
         {
             throw new Error( 'SAFE getDns failed with status ' + response.status + ' ' + response.statusText );
         }
 
-        return response
+        return parseResponse(response);
     });
   };
 
@@ -69,7 +68,7 @@ export const manifest = {
             throw new Error( 'SAFE getServices failed with status ' + response.status + ' ' + response.statusText );
         }
 
-        return response
+        return parseResponse(response);
     });
   };
 
