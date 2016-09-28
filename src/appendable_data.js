@@ -33,19 +33,21 @@ export const manifest = {
  * @param filterKeys
  */
 export const create = (token, name, isPrivate, filterType = 'BlackList', filterKeys = []) => {
+  const body = {
+    name: crypto.createHash('sha256').update(name).digest('base64'),
+    isPrivate: isPrivate,
+    filterType: filterType,
+    filterKeys: filterKeys
+  };
   const payload = {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: {
-      name: crypto.createHash('sha256').update(name).digest('base64'),
-      isPrivate: isPrivate,
-      filterType: filterType,
-      filterKeys: filterKeys
-    }
+    body: JSON.stringify(body)
   };
-  fetch(AD_ENDPOINT, payload)
+  return fetch(AD_ENDPOINT, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -68,7 +70,7 @@ export const getHandle = (token, dataIdHandle) => {
     };
   }
   const url = AD_ENDPOINT + 'handle/' + dataIdHandle;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -91,7 +93,7 @@ export const getDataIdHandle = (token, handleId) => {
     };
   }
   const url = AD_ENDPOINT + 'data-id/' + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -111,8 +113,8 @@ export const put = (token, handleId) => {
       Authorization: 'Bearer ' + token
     }
   };
-  const url = AD_ENDPOINT + '/' + handleId;
-  fetch(url, payload)
+  const url = AD_ENDPOINT + handleId;
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -133,7 +135,7 @@ export const post = (token, handleId) => {
     }
   };
   const url = AD_ENDPOINT + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -185,9 +187,9 @@ export const append = (token, handleId, dataIdHandle) => {
 };
 
 export const getMetadata = (token, handleId) => {
-  var url = AD_ENDPOINT + handleId;
+  var url = AD_ENDPOINT + 'metadata/' + handleId;
   var payload = {
-    method: 'HEAD'
+    method: 'GET'
   };
   if (token) {
     payload.headers = {
@@ -209,9 +211,10 @@ export const addToFilter = (token, handleId, signKeys) => {
   var payload = {
     method: 'PUT',
     headers: {
-      'Authorization':'Bearer ' + token
+      'Authorization':'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: signKeys
+    body: JSON.stringify(signKeys)
   };
   return fetch(url, payload)
     .then((response) => {
@@ -228,9 +231,10 @@ export const removeFromFilter = (token, handleId, signKeys) => {
   var payload = {
     method: 'DELETE',
     headers: {
-      'Authorization':'Bearer ' + token
+      'Authorization':'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: signKeys
+    body: JSON.stringify(signKeys)
   };
   return fetch(url, payload)
     .then((response) => {
@@ -257,6 +261,24 @@ export const getSignKeyAt = (token, handleId, index, fromDeleted) => {
         throw new Error('Get sign key from AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
       return parseResponse(response);
+    });
+};
+
+export const dropSignKeyHandle = (token, handleId) => {
+  var url = AD_ENDPOINT + 'sign-key/' + handleId;
+  var payload = {
+    method: 'DELETE',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error('Drop sign key handle failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
     });
 };
 
@@ -326,7 +348,7 @@ export const dropHandle = (token, handleId) => {
     };
   }
   const url = AD_ENDPOINT + 'handle/' + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {

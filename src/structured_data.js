@@ -25,19 +25,21 @@ export const manifest = {
  * @param cipherOptsHandle
  */
 export const create = (token, name, typeTag = 501, data, cipherOptsHandle) => {
+  const body = {
+    name: crypto.createHash('sha256').update(name).digest('base64'),
+    typeTag: typeTag,
+    cipherOpts: cipherOptsHandle,
+    data: data
+  };
   const payload = {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: {
-      name: crypto.createHash('sha256').update(name).digest('base64'),
-      typeTag: typeTag,
-      cipherOpts: cipherOptsHandle,
-      data: data
-    }
+    body: JSON.stringify(body)
   };
-  fetch(SD_ENDPOINT, payload)
+  return fetch(SD_ENDPOINT, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -60,7 +62,7 @@ export const getHandle = (token, dataIdHandle) => {
     };
   }
   const url = SD_ENDPOINT + 'handle/' + dataIdHandle;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -83,7 +85,7 @@ export const getDataIdHandle = (token, handleId) => {
     };
   }
   const url = SD_ENDPOINT + 'data-id/' + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -103,8 +105,8 @@ export const put = (token, handleId) => {
       Authorization: 'Bearer ' + token
     }
   };
-  const url = SD_ENDPOINT + '/' + handleId;
-  fetch(url, payload)
+  const url = SD_ENDPOINT + handleId;
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -125,7 +127,7 @@ export const post = (token, handleId) => {
     }
   };
   const url = SD_ENDPOINT + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -168,7 +170,7 @@ export const dropHandle = (token, handleId) => {
     };
   }
   const url = SD_ENDPOINT + 'handle/' + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {

@@ -73,7 +73,7 @@ var getServices = exports.getServices = function getServices(token, longName) {
       throw new Error('SAFE getServices failed with status ' + response.status + ' ' + response.statusText);
     }
 
-    return response;
+    return (0, _utils.parseResponse)(response);
   });
 };
 

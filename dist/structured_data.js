@@ -42,19 +42,21 @@ var create = exports.create = function create(token, name) {
   var data = arguments[3];
   var cipherOptsHandle = arguments[4];
 
+  var body = {
+    name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
+    typeTag: typeTag,
+    cipherOpts: cipherOptsHandle,
+    data: data
+  };
   var payload = {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: {
-      name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
-      typeTag: typeTag,
-      cipherOpts: cipherOptsHandle,
-      data: data
-    }
+    body: JSON.stringify(body)
   };
-  (0, _isomorphicFetch2.default)(SD_ENDPOINT, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(SD_ENDPOINT, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'StructuredData creation failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -75,7 +77,7 @@ var getHandle = exports.getHandle = function getHandle(token, dataIdHandle) {
     };
   }
   var url = SD_ENDPOINT + 'handle/' + dataIdHandle;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Get StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -96,7 +98,7 @@ var getDataIdHandle = exports.getDataIdHandle = function getDataIdHandle(token, 
     };
   }
   var url = SD_ENDPOINT + 'data-id/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Get DataId handle of StructuredData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -114,8 +116,8 @@ var put = exports.put = function put(token, handleId) {
       Authorization: 'Bearer ' + token
     }
   };
-  var url = SD_ENDPOINT + '/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  var url = SD_ENDPOINT + handleId;
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'PUT of StructuredData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -134,7 +136,7 @@ var post = exports.post = function post(token, handleId) {
     }
   };
   var url = SD_ENDPOINT + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'PUT of StructuredData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -173,7 +175,7 @@ var dropHandle = exports.dropHandle = function dropHandle(token, handleId) {
     };
   }
   var url = SD_ENDPOINT + 'handle/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Drop StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,

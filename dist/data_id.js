@@ -27,20 +27,22 @@ var manifest = exports.manifest = {
 var getAppendableDataHandle = exports.getAppendableDataHandle = function getAppendableDataHandle(token, name) {
   var isPrivate = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
+  var body = {
+    name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
+    isPrivate: isPrivate
+  };
   var payload = {
     method: 'POST',
-    body: {
-      name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
-      isPrivate: isPrivate
-    }
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   };
   if (token) {
-    payload.headers = {
-      Authorization: 'Bearer ' + token
-    };
+    payload.headers.Authorization = 'Bearer ' + token;
   }
   var url = DATA_ID_ENDPOINT + 'appendable-data';
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Get DataId for AppendableData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -61,7 +63,7 @@ var dropHandle = exports.dropHandle = function dropHandle(token, handleId) {
     };
   }
   var url = DATA_ID_ENDPOINT + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Drop DataId handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,

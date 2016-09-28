@@ -12,20 +12,22 @@ export const manifest = {
 };
 
 export const getAppendableDataHandle = (token, name, isPrivate=false) => {
+  const body = {
+    name: crypto.createHash('sha256').update(name).digest('base64'),
+    isPrivate: isPrivate
+  };
   const payload = {
     method: 'POST',
-    body: {
-      name: crypto.createHash('sha256').update(name).digest('base64'),
-      isPrivate: isPrivate
-    }
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   };
   if (token) {
-    payload.headers = {
-      Authorization: 'Bearer ' + token
-    };
+    payload.headers.Authorization = 'Bearer ' + token;
   }
   const url = DATA_ID_ENDPOINT + 'appendable-data';
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {
@@ -48,7 +50,7 @@ export const dropHandle = (token, handleId) => {
     };
   }
   const url = DATA_ID_ENDPOINT + handleId;
-  fetch(url, payload)
+  return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)
       {

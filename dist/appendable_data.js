@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dropHandle = exports.serialise = exports.clearAll = exports.removeAt = exports.getSignKeyAt = exports.removeFromFilter = exports.addToFilter = exports.getMetadata = exports.append = exports.getDataIdAt = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.create = exports.manifest = undefined;
+exports.dropHandle = exports.serialise = exports.clearAll = exports.removeAt = exports.dropSignKeyHandle = exports.getSignKeyAt = exports.removeFromFilter = exports.addToFilter = exports.getMetadata = exports.append = exports.getDataIdAt = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.create = exports.manifest = undefined;
 
 var _crypto = require('crypto');
 
@@ -49,19 +49,21 @@ var create = exports.create = function create(token, name, isPrivate) {
   var filterType = arguments.length <= 3 || arguments[3] === undefined ? 'BlackList' : arguments[3];
   var filterKeys = arguments.length <= 4 || arguments[4] === undefined ? [] : arguments[4];
 
+  var body = {
+    name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
+    isPrivate: isPrivate,
+    filterType: filterType,
+    filterKeys: filterKeys
+  };
   var payload = {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: {
-      name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
-      isPrivate: isPrivate,
-      filterType: filterType,
-      filterKeys: filterKeys
-    }
+    body: JSON.stringify(body)
   };
-  (0, _isomorphicFetch2.default)(AD_ENDPOINT, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(AD_ENDPOINT, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'AppendableData creation failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -82,7 +84,7 @@ var getHandle = exports.getHandle = function getHandle(token, dataIdHandle) {
     };
   }
   var url = AD_ENDPOINT + 'handle/' + dataIdHandle;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Get AppendableData handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -103,7 +105,7 @@ var getDataIdHandle = exports.getDataIdHandle = function getDataIdHandle(token, 
     };
   }
   var url = AD_ENDPOINT + 'data-id/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Get DataId handle of AppendableData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -121,8 +123,8 @@ var put = exports.put = function put(token, handleId) {
       Authorization: 'Bearer ' + token
     }
   };
-  var url = AD_ENDPOINT + '/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  var url = AD_ENDPOINT + handleId;
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'PUT of AppendableData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -141,7 +143,7 @@ var post = exports.post = function post(token, handleId) {
     }
   };
   var url = AD_ENDPOINT + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'POST of AppendableData failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
@@ -189,9 +191,9 @@ var append = exports.append = function append(token, handleId, dataIdHandle) {
 };
 
 var getMetadata = exports.getMetadata = function getMetadata(token, handleId) {
-  var url = AD_ENDPOINT + handleId;
+  var url = AD_ENDPOINT + 'metadata/' + handleId;
   var payload = {
-    method: 'HEAD'
+    method: 'GET'
   };
   if (token) {
     payload.headers = {
@@ -211,9 +213,10 @@ var addToFilter = exports.addToFilter = function addToFilter(token, handleId, si
   var payload = {
     method: 'PUT',
     headers: {
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: signKeys
+    body: JSON.stringify(signKeys)
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
@@ -228,9 +231,10 @@ var removeFromFilter = exports.removeFromFilter = function removeFromFilter(toke
   var payload = {
     method: 'DELETE',
     headers: {
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
     },
-    body: signKeys
+    body: JSON.stringify(signKeys)
   };
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
@@ -253,6 +257,22 @@ var getSignKeyAt = exports.getSignKeyAt = function getSignKeyAt(token, handleId,
       throw new Error('Get sign key from AppendableData failed with status ' + response.status + ' ' + response.statusText);
     }
     return (0, _utils.parseResponse)(response);
+  });
+};
+
+var dropSignKeyHandle = exports.dropSignKeyHandle = function dropSignKeyHandle(token, handleId) {
+  var url = AD_ENDPOINT + 'sign-key/' + handleId;
+  var payload = {
+    method: 'DELETE',
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+    if (response.status !== 200) {
+      throw new Error('Drop sign key handle failed with status ' + response.status + ' ' + response.statusText);
+    }
+    return response;
   });
 };
 
@@ -316,7 +336,7 @@ var dropHandle = exports.dropHandle = function dropHandle(token, handleId) {
     };
   }
   var url = AD_ENDPOINT + 'handle/' + handleId;
-  (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
       throw new Error({ error: 'Drop AppendableData handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
