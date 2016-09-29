@@ -21,7 +21,8 @@ export const manifest = {
   getSignKeyAt: 'promise',
   clearAll: 'promise',
   serialise: 'promise',
-  dropHandle: 'promise'
+  dropHandle: 'promise',
+  dropSignKeyHandle: 'promise'
 };
 
 /**
