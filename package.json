@@ -47,6 +47,7 @@
     "karma-chai-as-promised": "^0.1.2",
     "karma-chrome-launcher": "^2.0.0",
     "karma-mocha": "^1.1.1",
+    "karma-mocha-reporter": "^2.2.0",
     "karma-notify-reporter": "^1.0.1",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-sinon-chai": "^1.2.4",
@@ -56,6 +57,7 @@
     "npm-watch": "^0.1.6",
     "publish-please": "^2.1.4",
     "requirejs": "^2.3.2",
+    "sinon": "^1.17.6",
     "webpack": "^1.13.2"
   }
 }
