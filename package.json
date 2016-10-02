@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "test": "karma start",
+    "test:travis": "karma start --browsers PhantomJS",
     "tdd": "karma start --auto-watch --single-run false",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard",
@@ -57,6 +58,7 @@
     "karma-webpack": "^1.8.0",
     "mocha": "^3.0.2",
     "npm-watch": "^0.1.6",
+    "phantomjs": "^2.1.7",
     "publish-please": "^2.1.4",
     "requirejs": "^2.3.2",
     "sinon": "^1.17.6",

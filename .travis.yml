@@ -21,7 +21,7 @@ addons:
       
 
 script:
-  - npm run test
+  - npm run test:travis
   
 
 notifications:
