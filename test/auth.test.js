@@ -9,6 +9,11 @@ import {
     , setUserLongName
  } from '../src/auth';
 
+// import fetch from 'isomorphic-fetch';
+import fetchMock from 'fetch-mock';
+import chaiAsPromised from 'chai-as-promised';
+
+chai.use( chaiAsPromised );
 
 
 describe ( 'authorise', () => 
@@ -25,16 +30,22 @@ describe ( 'authorise', () =>
     } );
     
     
-    // it( 'should call isTokenValid', () =>
-    // {
-    //     sinon.spy( auth, 'isTokenValid' );
-    //     
-    //     authorise( 'x', {} , isTokenValid );
-    //     
-    //     // expect( isTokenValid ).to.be.called;
-    //     isTokenValid.restore();
-    // 
-    // } );
+    
+    it( 'should return a valid response object', ( done ) =>
+    {
+        fetchMock.get('*', {hello: 'world'});
+            
+        authorise( 'x', {} )
+            .catch( done )
+            .then( response => {
+                expect( response ).to.exist;
+                fetchMock.restore();
+                done();
+            } )
+            
+        fetchMock.restore();
+    
+    } );
 });  
 
 
@@ -64,6 +75,10 @@ describe ( 'getUserLongName', () =>
 });   
 
 
+
+
+
+
 describe ( 'isTokenValid', () => 
 {
     it ( 'should exist', () => 
@@ -72,7 +87,39 @@ describe ( 'isTokenValid', () =>
         expect( isTokenValid ).to.be.a.function;
         expect( isTokenValid ).to.not.throw    ;
     } );
+    
+    it( 'should return true when valid', ( done ) =>
+    {
+        fetchMock.get('*', 200 );
+        
+        isTokenValid('xxx')
+            .catch( done )
+            .then( validity => 
+            {                
+                fetchMock.restore();
+                expect(validity).to.be.true;
+                done();
+            })    
+    })
+    
+    it( 'should fail when response is 401', ( done ) =>
+    {
+        fetchMock.get('*', 401 );
+        
+        isTokenValid('xxx')
+            .catch( done )
+            .then( validity => 
+            {                
+                fetchMock.restore();
+                expect(validity).to.be.false;
+                done();
+            })    
+    })
+    
 });             
+
+
+
 
 describe ( 'manifest', () => 
 {

@@ -12,8 +12,10 @@ module.exports = function(config) {
         
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'sinon-chai'],
-        
+        frameworks: ['mocha', 'sinon-chai' ],
+        // frameworks: ['mocha', 'sinon-chai', 'chai-as-promised'],
+        // plugins: [ 'webpack', 'sourcemap', 'karma-chai-as-promised'],
+
         
         files: [
             // all files ending in "_test"
@@ -53,6 +55,11 @@ module.exports = function(config) {
             
             // webpack configuration
             devtool: 'inline-source-map',
+            resolve: {
+                alias: {
+                    'isomorphic-fetch': 'fetch-mock-forwarder'
+                }
+            },
             module : {
                 
                 loaders : [
@@ -95,7 +102,7 @@ module.exports = function(config) {
         
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS'],
+        browsers: ['PhantomJS', 'Chrome'],
         
         
         // Continuous Integration mode

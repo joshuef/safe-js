@@ -108,7 +108,7 @@ export const isTokenValid = function( token )
         {
             return false;
         }
-        else if( response.status === 200 )
+        else if( response.status === 200 && response.ok )
         {
             
             return true;
