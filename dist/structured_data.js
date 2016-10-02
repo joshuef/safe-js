@@ -17,7 +17,7 @@ var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var SD_ENDPOINT = _utils.SERVER + 'structured-data/';
+var SD_ENDPOINT = _utils.SERVER + 'structured-data/'; // 'use strict';
 
 var manifest = exports.manifest = {
   create: 'promise',

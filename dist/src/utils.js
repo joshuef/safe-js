@@ -114,11 +114,9 @@ export const isTokenValid = function( tokenKey ) {
 // authorise application
 export const authorise = function( tokenKey, packageData )
 {
-    console.log( "accepted at auth", tokenKey, packageData );
     return isTokenValid( tokenKey )
         .then( response => {
 
-            console.log( 'in auth', response );
             if ( !response || response.error || response.status === 401 ) {
                 localStorage.clear();
                 return sendAuthorisationRequest( tokenKey, packageData );

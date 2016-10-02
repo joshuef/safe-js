@@ -134,7 +134,6 @@ export const getFile = function( token, filePath, isPathShared = false, download
         }
     };
 
-    console.log( payload );
     return fetch(url, payload)
     .then( (response) => {
         if (response.status !== 200 && response.status !== 206)

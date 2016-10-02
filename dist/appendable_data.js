@@ -17,7 +17,7 @@ var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var AD_ENDPOINT = _utils.SERVER + 'appendable-data/';
+var AD_ENDPOINT = _utils.SERVER + 'appendable-data/'; // 'use strict';
 
 var manifest = exports.manifest = {
   create: 'promise',

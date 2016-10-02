@@ -4,8 +4,8 @@
   "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node_modules/.bin/babel src --presets babel-preset-es2015 --out-dir dist",
-    "test": "node_modules/karma/bin/karma start",
+    "build": "babel src --presets babel-preset-es2015 --out-dir dist",
+    "test": "karma start",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard",
     "watch": "npm-watch"
@@ -33,7 +33,6 @@
     "isomorphic-fetch": "^2.2.1"
   },
   "devDependencies": {
-    "babel": "^6.5.2",
     "babel-cli": "^6.10.1",
     "babel-loader": "^6.2.5",
     "babel-polyfill": "^6.13.0",
