@@ -53,11 +53,12 @@ safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 
 ## API
 
-### safeAuth.authorise
+### auth.js
+#### authorise 
 
-Authorises the app with the SAFE launcher.
+[Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. If a `tokenKey` is passed it will check for an existing token in localstorage, if a valid key is found, it will
 
--  `packageData` - Object containing your app information. This is how the application will appear in the launcher.
+-  `packageData` - Object containing your app information. This is how the application will authorised in the launcher. 
 - `tokenKey` - Optional string to ID the returned auth token in localStorage (NB. with SBB you'll need to manually save this to the browser's localStorage)
 
 eg: 
@@ -67,19 +68,66 @@ let app = {
    name: '',
    id: '',
    version: '',
-   vendor: ''
+   vendor: '',
+   permissions: [],
   }
   
 safeAuth.authorise( app )
 
 ```
 
+##### Promise Return
+Returns an object of the form:
+```js
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Im5RT1poRFJ2VUFLRlVZMzNiRTlnQ25VbVVJSkV0Q2lmYk4zYjE1dXZ2TlU9In0.OTKcHQ9VUKYzBXH_MqeWR4UcHFJV-xlllR68UM9l0b4",
+    "permissions": [
+        "SAFE_DRIVE_ACCESS"
+    ]
+}
+```
+
+If the current token was valid, `permissions` will be omitted.
+
+#### getAuthToken
+
+Returns the token stored at `tokenKey` in localStorage
+
+- `tokenKey` - string to ID the auth token in localStorage
+
+#### getUserLongName
+
+Returns the longName stored at `LongNameKey` in localStorage
+
+- `LongNameKey` - string to ID the long name key in localStorage
 
 
+#### isTokenValid
+
+Check if an app token is valid. 
+
+- `token` - Auth token string.
+
+Returns a promise, which returns a boolean of validity.
+
+#### setAuthToken
+
+Saves the token stored at `tokenKey` in localStorage
+
+
+#### setUserLongName
+
+Saves the userLongName stored at `longNameKey` in localStorage
+
+
+#### sendAuthorisationRequest
+
+Will authorise an app object on the network, as per `authorise` above, but does not first check for a token in localStorage.
 
 
 ## Todo
 
-- [ ] Get all functions stable available functions.
-- [ ] Add documentation.
-- [ ] Add mocha tests.
+- [x] Add auth.js documentation.
+- [ ] Add dns.js documentation.
+- [ ] Add nfs.js documentation.
+- [ ] Increase test coverage.
