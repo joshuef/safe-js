@@ -78,7 +78,6 @@ describe ( 'getUserLongName', () =>
 
 
 
-
 describe ( 'isTokenValid', () => 
 {
     it ( 'should exist', () => 

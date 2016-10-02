@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src --presets babel-preset-es2015 --out-dir dist",
     "test": "karma start",
+    "tdd": "karma start --auto-watch --single-run false",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard",
     "watch": "npm-watch"
