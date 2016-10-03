@@ -54,7 +54,7 @@ safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 ## API
 
 ### auth.js
-#### authorise 
+#### `authorise`
 
 [Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. If a `tokenKey` is passed it will check for an existing token in localstorage, if a valid key is found, it will
 
@@ -89,20 +89,20 @@ Returns an object of the form:
 
 If the current token was valid, `permissions` will be omitted.
 
-#### getAuthToken
+#### `getAuthToken`
 
 Returns the token stored at `tokenKey` in localStorage
 
 - `tokenKey` - string to ID the auth token in localStorage
 
-#### getUserLongName
+#### `getUserLongName`
 
 Returns the longName stored at `LongNameKey` in localStorage
 
 - `LongNameKey` - string to ID the long name key in localStorage
 
 
-#### isTokenValid
+#### `isTokenValid`
 
 Check if an app token is valid. 
 
@@ -110,24 +110,85 @@ Check if an app token is valid.
 
 Returns a promise, which returns a boolean of validity.
 
-#### setAuthToken
+#### `setAuthToken`
 
 Saves the token stored at `tokenKey` in localStorage
 
 
-#### setUserLongName
+#### `setUserLongName`
 
 Saves the userLongName stored at `longNameKey` in localStorage
 
 
-#### sendAuthorisationRequest
+#### `sendAuthorisationRequest`
 
 Will authorise an app object on the network, as per `authorise` above, but does not first check for a token in localStorage.
+
+
+
+### dns.js
+
+#### `addService`
+
+Creates a SAFE DNS Service. (https://api.safedev.org/dns/add-service.html)
+
+- `token` - auth token
+- `longName` - longName to add service to.
+- `serviceName` - Name of service to create.
+- `isPathShared` - Name of service to create
+- `serviceHomePathDir` - The full path of the directory to be served by this service.
+
+Returns a promise which resolves as truthy upon success.
+
+
+#### `createLongName`
+
+Creates a SAFE DNS LongName / Public Id. (https://api.safedev.org/dns/create-long-name.html)
+
+- `token` - auth token
+- `longName` - Name of service to create
+
+Returns a promise which resolves as truthy upon success.
+
+
+#### `listLongNames`
+
+List all long names registered by current user (https://api.safedev.org/dns/list-long-names.html)
+
+- `token` - auth token
+
+Returns a JSON array of long names.
+
+```js
+[
+    "example",
+    "test"
+]
+```
+
+#### `listServices`
+
+List all services associated with a long name registered by current user (https://api.safedev.org/dns/list-services.html)
+
+- `token` - auth token
+
+Returns a JSON array of service names.
+
+```js
+[
+    "www",
+    "test"
+]
+```
+
 
 
 ## Todo
 
 - [x] Add auth.js documentation.
-- [ ] Add dns.js documentation.
+- [x] Add dns.js documentation.
+- [ ] Add nfs.js documentation.
 - [ ] Add nfs.js documentation.
 - [ ] Increase test coverage.
+- [ ] Ensure all API endpoints are represented.
+- [ ] Update isPathShared to appOrDrive ? ... Something more semantic.
