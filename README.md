@@ -132,7 +132,7 @@ Will authorise an app object on the network, as per `authorise` above, but does 
 
 Creates a SAFE DNS Service. (https://api.safedev.org/dns/add-service.html)
 
-- `token` - auth token
+- `token` - (`string`) -  auth token
 - `longName` - longName to add service to.
 - `serviceName` - Name of service to create.
 - `isPathShared` - Name of service to create
@@ -145,7 +145,7 @@ Returns a promise which resolves as truthy upon success.
 
 Creates a SAFE DNS LongName / Public Id. (https://api.safedev.org/dns/create-long-name.html)
 
-- `token` - auth token
+- `token` - (`string`) -  auth token
 - `longName` - Name of service to create
 
 Returns a promise which resolves as truthy upon success.
@@ -155,7 +155,7 @@ Returns a promise which resolves as truthy upon success.
 
 List all long names registered by current user (https://api.safedev.org/dns/list-long-names.html)
 
-- `token` - auth token
+- `token` - (`string`) -  auth token
 
 Returns a JSON array of long names.
 
@@ -170,7 +170,7 @@ Returns a JSON array of long names.
 
 List all services associated with a long name registered by current user (https://api.safedev.org/dns/list-services.html)
 
-- `token` - auth token
+- `token` - (`string`) -  auth token
 
 Returns a JSON array of service names.
 
@@ -181,14 +181,141 @@ Returns a JSON array of service names.
 ]
 ```
 
+### nfs.js
+#### `createDir`
+
+(https://api.safedev.org/nfs/directory/create-directory.html)
+
+- `token` - (`string`) auth token
+- `dirPath` - (`string`) full directory path
+- `isPrivate` - (`bool`) is the data private?
+- `metadata` - (`base64 string`) metadata for the dir.
+- `isPathShared` - (`bool`) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
+
+#### `createFile`
+
+(https://api.safedev.org/nfs/file/create-file.html)
+
+- `token` - (`string`) auth token
+- `filePath` - (`string`) file path
+- `dataToWrite` - data of file being uploaded
+- `dataType` - (`string` - optional), type of data being uploaded. `text/plain` for example.
+- `dataLength` - (`int` - optional) length of data being written.
+- `metadata` - (`base64 string` - optional) metadata for the dir.
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
+#### `deleteDir`
+
+(https://api.safedev.org/nfs/directory/delete-directory.html)
+
+- `token` - (`string`) auth token
+- `dirPath` - (`string`) file path
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
+> TODO? Remove isPathShared here and use only path string ( which would include app/drive?)
+
+#### `deleteFile`
+
+(https://api.safedev.org/nfs/file/delete-file.html)
+
+- `token` - (`string`) auth token
+- `filePath` - (`string`) file path
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
+
+
+
+#### `getDir`
+
+(https://api.safedev.org/nfs/directory/get-directory.html)
+
+- `token` - (`string`) auth token
+- `dirPath` - (`string`) file path
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves to a JSON object of dir info.
+
+```js
+{
+    "info": {
+        "name": "images",
+        "isPrivate": true,
+        "createdOn": "2016-09-26T04:41:05.342Z",
+        "modifiedOn": "2016-09-26T04:41:05.342Z",
+        "metadata": "c2FtcGxlIG1ldGFkYXRh"
+    },
+    "files": [],
+    "subDirectories": []
+}
+```
+
+
+
+#### `getFile`
+
+Get a file. 
+
+(https://api.safedev.org/nfs/file/get-file.html)
+
+- `token` - (`string`) auth token
+- `filePath` - (`string`) file path
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves to the file data upon success.
+
+
+
+#### `rename`
+
+Rename a file or dir. 
+
+(https://api.safedev.org/nfs/directory/update-directory.html)
+(https://api.safedev.org/nfs/file/update-file.html)
+
+- `token` - (`string`) auth token
+- `path` - (`string`) path
+- `newName` - (`string`) new name
+- `isFile` - (`bool`) `true` if it is a file and not a dir.
+- `metadata` - (`base64 string` - optional) metadata for the dir.
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
+#### `renameDir`
+(https://api.safedev.org/nfs/directory/update-directory.html)
+
+Wrapper for `rename` with directory options set. Returns a Promise which resolves truthy upon success.
+
+#### `renameFile`
+(https://api.safedev.org/nfs/file/update-file.html)
+
+Wrapper for `rename` with file options set. Returns a Promise which resolves truthy upon success.
+
+### TODO
+
+- [ ] NFS needs `move` endpoints
 
 
 ## Todo
 
 - [x] Add auth.js documentation.
 - [x] Add dns.js documentation.
-- [ ] Add nfs.js documentation.
-- [ ] Add nfs.js documentation.
+- [x] Add nfs.js documentation.
+- [ ] Improve documentation (clarity/readability/gitbook?).
 - [ ] Increase test coverage.
 - [ ] Ensure all API endpoints are represented.
 - [ ] Update isPathShared to appOrDrive ? ... Something more semantic.
+
+
+## License
+
+MIT.
