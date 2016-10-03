@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dropHandle = exports.serialise = exports.clearAll = exports.removeAt = exports.dropSignKeyHandle = exports.getSignKeyAt = exports.removeFromFilter = exports.addToFilter = exports.getMetadata = exports.append = exports.getDataIdAt = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.create = exports.manifest = undefined;
+exports.dropHandle = exports.serialise = exports.clearAll = exports.removeAt = exports.getSignKeyAt = exports.removeFromFilter = exports.addToFilter = exports.getMetadata = exports.append = exports.getDataIdAt = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.create = exports.manifest = undefined;
 
 var _crypto = require('crypto');
 
@@ -34,8 +34,7 @@ var manifest = exports.manifest = {
   getSignKeyAt: 'promise',
   clearAll: 'promise',
   serialise: 'promise',
-  dropHandle: 'promise',
-  dropSignKeyHandle: 'promise'
+  dropHandle: 'promise'
 };
 
 /**
@@ -50,8 +49,11 @@ var create = exports.create = function create(token, name, isPrivate) {
   var filterType = arguments.length <= 3 || arguments[3] === undefined ? 'BlackList' : arguments[3];
   var filterKeys = arguments.length <= 4 || arguments[4] === undefined ? [] : arguments[4];
 
+  if (typeof name === 'string') {
+    name = _crypto2.default.createHash('sha256').update(name).digest('base64');
+  }
   var body = {
-    name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
+    name: name,
     isPrivate: isPrivate,
     filterType: filterType,
     filterKeys: filterKeys
@@ -258,22 +260,6 @@ var getSignKeyAt = exports.getSignKeyAt = function getSignKeyAt(token, handleId,
       throw new Error('Get sign key from AppendableData failed with status ' + response.status + ' ' + response.statusText);
     }
     return (0, _utils.parseResponse)(response);
-  });
-};
-
-var dropSignKeyHandle = exports.dropSignKeyHandle = function dropSignKeyHandle(token, handleId) {
-  var url = AD_ENDPOINT + 'sign-key/' + handleId;
-  var payload = {
-    method: 'DELETE',
-    headers: {
-      'Authorization': 'Bearer ' + token
-    }
-  };
-  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
-    if (response.status !== 200) {
-      throw new Error('Drop sign key handle failed with status ' + response.status + ' ' + response.statusText);
-    }
-    return response;
   });
 };
 

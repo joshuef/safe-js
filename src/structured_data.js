@@ -13,6 +13,7 @@ export const manifest = {
   put: 'promise',
   post: 'promise',
   readData: 'promise',
+  updateData: 'promise',
   dropHandle: 'promise'
 };
 
@@ -25,8 +26,11 @@ export const manifest = {
  * @param cipherOptsHandle
  */
 export const create = (token, name, typeTag = 501, data, cipherOptsHandle) => {
+  if (typeof name === 'string') {
+    name = crypto.createHash('sha256').update(name).digest('base64');
+  }
   const body = {
-    name: crypto.createHash('sha256').update(name).digest('base64'),
+    name: name,
     typeTag: typeTag,
     cipherOpts: cipherOptsHandle,
     data: data
@@ -52,6 +56,32 @@ export const create = (token, name, typeTag = 501, data, cipherOptsHandle) => {
     });
 };
 
+export const updateData = (token, handleId, data, cipherOptsHandle) => {
+  const body = {
+    data: data,
+    cipherOpts: cipherOptsHandle
+  };
+  const payload = {
+    method: 'PATCH',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  };
+  const url = SD_ENDPOINT + handleId;
+  return fetch(url, payload).then(response => {
+    if (response.status !== 200)
+    {
+      throw new Error({ error: 'Update StructuredData failed with status ' + response.status + ' ' + response.statusText,
+        errorPayload: payload,
+        errorUrl : url
+      });
+    }
+    return response;
+  });
+};
+
 export const getHandle = (token, dataIdHandle) => {
   const payload = {
     method: 'GET'
@@ -66,10 +96,10 @@ export const getHandle = (token, dataIdHandle) => {
     .then((response) => {
       if (response.status !== 200)
       {
-        throw new Error({ error: 'Get StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+        throw new Error(JSON.stringify({ error: 'Get StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
           errorPayload: payload,
           errorUrl : url
-        });
+        }));
       }
       return parseResponse(response);
     });
@@ -156,7 +186,7 @@ export const readData = (token, handleId) => {
       {
         throw new Error( 'Read StructuredData failed with status ' + response.status + ' ' + response.statusText );
       }
-      return parseResponse(response);
+      return response.buffer();
     })
 };
 

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.dropHandle = exports.readData = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.create = exports.manifest = undefined;
+exports.dropHandle = exports.readData = exports.post = exports.put = exports.getDataIdHandle = exports.getHandle = exports.updateData = exports.create = exports.manifest = undefined;
 
 var _crypto = require('crypto');
 
@@ -26,6 +26,7 @@ var manifest = exports.manifest = {
   put: 'promise',
   post: 'promise',
   readData: 'promise',
+  updateData: 'promise',
   dropHandle: 'promise'
 };
 
@@ -42,8 +43,11 @@ var create = exports.create = function create(token, name) {
   var data = arguments[3];
   var cipherOptsHandle = arguments[4];
 
+  if (typeof name === 'string') {
+    name = _crypto2.default.createHash('sha256').update(name).digest('base64');
+  }
   var body = {
-    name: _crypto2.default.createHash('sha256').update(name).digest('base64'),
+    name: name,
     typeTag: typeTag,
     cipherOpts: cipherOptsHandle,
     data: data
@@ -67,6 +71,31 @@ var create = exports.create = function create(token, name) {
   });
 };
 
+var updateData = exports.updateData = function updateData(token, handleId, data, cipherOptsHandle) {
+  var body = {
+    data: data,
+    cipherOpts: cipherOptsHandle
+  };
+  var payload = {
+    method: 'PATCH',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  };
+  var url = SD_ENDPOINT + handleId;
+  return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
+    if (response.status !== 200) {
+      throw new Error({ error: 'Update StructuredData failed with status ' + response.status + ' ' + response.statusText,
+        errorPayload: payload,
+        errorUrl: url
+      });
+    }
+    return response;
+  });
+};
+
 var getHandle = exports.getHandle = function getHandle(token, dataIdHandle) {
   var payload = {
     method: 'GET'
@@ -79,10 +108,10 @@ var getHandle = exports.getHandle = function getHandle(token, dataIdHandle) {
   var url = SD_ENDPOINT + 'handle/' + dataIdHandle;
   return (0, _isomorphicFetch2.default)(url, payload).then(function (response) {
     if (response.status !== 200) {
-      throw new Error({ error: 'Get StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+      throw new Error(JSON.stringify({ error: 'Get StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
         errorPayload: payload,
         errorUrl: url
-      });
+      }));
     }
     return (0, _utils.parseResponse)(response);
   });
@@ -161,7 +190,7 @@ var readData = exports.readData = function readData(token, handleId) {
     if (response.status !== 200) {
       throw new Error('Read StructuredData failed with status ' + response.status + ' ' + response.statusText);
     }
-    return (0, _utils.parseResponse)(response);
+    return response.buffer();
   });
 };
 
