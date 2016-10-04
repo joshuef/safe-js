@@ -10,7 +10,7 @@ import {parseResponse, SERVER} from './utils';
 export const manifest = {
     addService          : 'promise',
     createLongName      : 'promise',
-    getDns       : 'promise',
+    getDns              : 'promise',
     listServices        : 'promise'
 };
 
