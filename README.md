@@ -1,4 +1,4 @@
-# SAFE-js 0.5
+# SAFE-js
 
 Isomorphic adaptation of API hooks found in the [safe demo app](https://github.com/maidsafe/safe_examples).
 
