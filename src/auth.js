@@ -1,3 +1,5 @@
+'use strict';
+
 import fetch    from 'isomorphic-fetch';
 import {parseResponse, SERVER} from './utils';
 
@@ -51,6 +53,9 @@ export const manifest = {
  * @param  { string }  [tokenKey=TOKEN_KEY] key to save token as in localStorage (in a browser)
  * @param  {Boolean} isTokenValid         [OPTIONAL] Token validator function
  * @return {[type]}                       [description]
+ *
+ * TODO: Remove token check here, this should essentially just be the same as
+ * sendAuthRequest
  */
 export const authorise = function( packageData, tokenKey = TOKEN_KEY )
 {   
@@ -59,12 +64,18 @@ export const authorise = function( packageData, tokenKey = TOKEN_KEY )
     return isTokenValid( token )
         .then( response => 
         {
+            if( response )
+            {
+                return {
+                    token: token
+                }
+            }
+            
             if ( !response ) 
             {
                 localStorage.clear();
                 return sendAuthorisationRequest( packageData, tokenKey );
             }
-            return response;
         });
 };
 
@@ -106,7 +117,7 @@ export const isTokenValid = function( token )
         {
             return false;
         }
-        else if( response.status === 200 )
+        else if( response.status === 200 && response.ok )
         {
             
             return true;
@@ -158,7 +169,7 @@ export const sendAuthorisationRequest = function( packageData = {}, tokenKey = T
         if (response.status !== 200 && response.status !== 206)
         {
             throw new Error( 'SAFE sendAuthorisationRequest failed with status ' +
-                response.status + ' ' + response.statusText );
+                response.status + ' ' + response.body.description );
         }
 
         const body          = response.body;

@@ -12,8 +12,10 @@ module.exports = function(config) {
         
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['mocha', 'sinon-chai'],
-        
+        frameworks: ['mocha', 'sinon-chai' ],
+        // frameworks: ['mocha', 'sinon-chai', 'chai-as-promised'],
+        // plugins: [ 'webpack', 'sourcemap', 'karma-chai-as-promised'],
+
         
         files: [
             // all files ending in "_test"
@@ -53,12 +55,17 @@ module.exports = function(config) {
             
             // webpack configuration
             devtool: 'inline-source-map',
+            resolve: {
+                alias: {
+                    'isomorphic-fetch': 'fetch-mock-forwarder'
+                }
+            },
             module : {
                 
                 loaders : [
                     {
                         test: /\.(js|jsx)$/,
-                        loader: 'babel-loader'
+                        loader: 'babel'
                     }
                 ]
             }
@@ -73,7 +80,7 @@ module.exports = function(config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress', 'notify'],
+        reporters: [ 'mocha', 'notify'],
         
         
         // web server port
@@ -90,17 +97,18 @@ module.exports = function(config) {
         
         
         // enable / disable watching file and executing tests whenever any file changes
-        autoWatch: true,
+        autoWatch: false,
         
         
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome', 'PhantomJS'],
+        browsers: ['PhantomJS'],
+        // browsers: ['PhantomJS', 'Chrome'],
         
         
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: false,
+        singleRun: true,
         
         // Concurrency level
         // how many browser should be started simultaneous

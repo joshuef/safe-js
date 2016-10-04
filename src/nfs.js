@@ -1,4 +1,5 @@
-import fs       from 'fs';
+'use strict';
+
 import fetch    from 'isomorphic-fetch';
 
 const ROOT_PATH =
@@ -17,9 +18,9 @@ const SERVER = 'http://localhost:8100/' + VERSION + '/';
 */
 export const manifest = {
     createDir               : 'promise',
+    createFile              : 'promise',
     deleteDir               : 'promise',
     deleteFile              : 'promise',
-    createFile              : 'promise',
     getDir                  : 'promise',
     getFile                 : 'promise',
     // modifyFileContent       : 'promise',
@@ -162,7 +163,7 @@ export const getDir = function(token, dirPath, isPathShared = false) {
 };
 
 
-export const getFile = function( token, filePath, isPathShared = false, downloadPath ) {
+export const getFile = function( token, filePath, isPathShared = false ) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
@@ -195,7 +196,7 @@ export const getFile = function( token, filePath, isPathShared = false, download
 };
 
 
-export const rename = function(token, path, newName, isFile, metadata, isPathShared = false,) {
+export const rename = function(token, path, newName, isFile, metadata, isPathShared = false) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + (isFile ? 'nfs/file/metadata/' : 'nfs/directory/') + rootPath + '/' + path;
 
