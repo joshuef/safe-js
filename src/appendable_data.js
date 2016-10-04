@@ -21,8 +21,7 @@ export const manifest = {
   getSignKeyAt: 'promise',
   clearAll: 'promise',
   serialise: 'promise',
-  dropHandle: 'promise',
-  dropSignKeyHandle: 'promise'
+  dropHandle: 'promise'
 };
 
 /**
@@ -34,8 +33,11 @@ export const manifest = {
  * @param filterKeys
  */
 export const create = (token, name, isPrivate, filterType = 'BlackList', filterKeys = []) => {
+  if (typeof name === 'string') {
+    name = crypto.createHash('sha256').update(name).digest('base64');
+  }
   const body = {
-    name: crypto.createHash('sha256').update(name).digest('base64'),
+    name: name,
     isPrivate: isPrivate,
     filterType: filterType,
     filterKeys: filterKeys
@@ -262,24 +264,6 @@ export const getSignKeyAt = (token, handleId, index, fromDeleted) => {
         throw new Error('Get sign key from AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
       return parseResponse(response);
-    });
-};
-
-export const dropSignKeyHandle = (token, handleId) => {
-  var url = AD_ENDPOINT + 'sign-key/' + handleId;
-  var payload = {
-    method: 'DELETE',
-    headers: {
-      'Authorization':'Bearer ' + token
-    }
-  };
-  return fetch(url, payload)
-    .then((response) => {
-      if (response.status !== 200)
-      {
-        throw new Error('Drop sign key handle failed with status ' + response.status + ' ' + response.statusText );
-      }
-      return response;
     });
 };
 
