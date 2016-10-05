@@ -21,7 +21,12 @@ export const manifest = {
   getSignKeyAt: 'promise',
   clearAll: 'promise',
   serialise: 'promise',
-  dropHandle: 'promise'
+  deserialise: 'promise',
+  dropHandle: 'promise',
+  getEncryptKey: 'promise',
+  dropEncryptKeyHandle: 'promise',
+  toggleFilter: 'promise',
+  restore: 'promise',
 };
 
 /**
@@ -323,6 +328,27 @@ export const serialise = (token, handleId) => {
     });
 };
 
+export const deserialise = (token, data) => {
+  const url = `${AD_ENDPOINT}deserialise/${handleId}`;
+  var payload = {
+    method: 'POST',
+    body: data
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error('Deserialise AppendableData handle id failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
 export const dropHandle = (token, handleId) => {
   const payload = {
     method: 'DELETE'
@@ -345,3 +371,77 @@ export const dropHandle = (token, handleId) => {
       return response;
     });
 };
+
+export const getEncryptKey = (token, handleId) => {
+  var url = `${AD_ENDPOINT}encrypt-key/${handleId}`;
+  var payload = {
+    method: 'GET',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Get AppendableData encrypted key handle failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return parseResponse(response);
+    });
+};
+
+export const dropEncryptKeyHandle = (token, handleId) => {
+  var url = `${AD_ENDPOINT}encrypt-key/${handleId}`;
+  var payload = {
+    method: 'DELETE',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Delete AppendableData encrypted key handle failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
+export const toggleFilter = (token, handleId) => {
+  var url = `${AD_ENDPOINT}toggle-filter/${handleId}`;
+  var payload = {
+    method: 'PUT',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Toggle AppendableData filter failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
+export const restore = (token, handleId, index) => {
+  var url = `${AD_ENDPOINT}restore/${handleId}`;
+  var payload = {
+    method: 'PUT',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Restore AppendableData failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
+export const remove 

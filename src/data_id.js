@@ -2,14 +2,16 @@
 
 import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
-import {parseResponse, SERVER} from './utils';
+import {parseResponse, SERVER, SD_DEFAULT_TYPE_TAG} from './utils';
 
 const DATA_ID_ENDPOINT = SERVER + 'data-id/';
 
 export const manifest = {
   getAppendableDataHandle: 'promise',
   getStructuredDataHandle: 'promise',
-  dropHandle             : 'promise'
+  dropHandle             : 'promise',
+  serialise              : 'promise',
+  deserialise            : 'promise'
 };
 
 export const getAppendableDataHandle = (token, name, isPrivate=false) => {
@@ -44,7 +46,7 @@ export const getAppendableDataHandle = (token, name, isPrivate=false) => {
     });
 };
 
-export const getStructuredDataHandle = (token, name, typeTag = 501) => {
+export const getStructuredDataHandle = (token, name, typeTag = SD_DEFAULT_TYPE_TAG) => {
   if (typeof name === 'string') {
     name = crypto.createHash('sha256').update(name).digest('base64');
   }
@@ -76,7 +78,6 @@ export const getStructuredDataHandle = (token, name, typeTag = 501) => {
     });
 };
 
-
 export const dropHandle = (token, handleId) => {
   const payload = {
     method: 'DELETE'
@@ -96,6 +97,51 @@ export const dropHandle = (token, handleId) => {
           errorUrl : url
         });
       }
-      return response
+      return response;
+    });
+};
+
+export const serialise = (token, handleId) => {
+  const url = `${DATA_ID_ENDPOINT}${handleId}`;
+  const payload = {
+    method: 'GET',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Serialise data id handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response.buffer();
+    });
+};
+
+export const deserialise = (token, data) => {
+  const url = `${DATA_ID_ENDPOINT}`;
+  const payload = {
+    method: 'POST',
+    body: data
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Deserialise data id handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
     });
 };
