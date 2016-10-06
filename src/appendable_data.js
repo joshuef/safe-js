@@ -324,7 +324,7 @@ export const serialise = (token, handleId) => {
       {
         throw new Error('Clear data from AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
-      return response;
+      return response.buffer();
     });
 };
 
@@ -345,7 +345,7 @@ export const deserialise = (token, data) => {
       {
         throw new Error('Deserialise AppendableData handle id failed with status ' + response.status + ' ' + response.statusText );
       }
-      return response;
+      return parseResponse(response);
     });
 };
 
@@ -444,4 +444,4 @@ export const restore = (token, handleId, index) => {
     });
 };
 
-export const remove 
+export const remove

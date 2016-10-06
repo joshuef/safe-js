@@ -18,7 +18,7 @@ export const manifest = {
   serialise: 'promise',
   deserialise: 'promise',
   remove: 'promise',
-  getMetaData: 'promise'
+  getMetadata: 'promise'
 };
 
 /**
@@ -174,8 +174,8 @@ export const post = (token, handleId) => {
     });
 };
 
-export const readData = (token, handleId) => {
-  var url = SD_ENDPOINT + handleId;
+export const readData = (token, handleId, version) => {
+  var url = `${SD_ENDPOINT}${handleId}/${version}`;
   var payload = {
     method: 'GET'
   };
@@ -287,7 +287,7 @@ export const remove = (token, handleId) => {
     });
 };
 
-export const getMetaData = (token, handleId) => {
+export const getMetadata = (token, handleId) => {
   const url = `${SD_ENDPOINT}metadata/${handleId}`;
   const payload = {
     method: 'GET'
