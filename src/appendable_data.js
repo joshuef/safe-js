@@ -443,5 +443,3 @@ export const restore = (token, handleId, index) => {
       return response;
     });
 };
-
-export const remove
