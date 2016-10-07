@@ -83,15 +83,16 @@ export const read = (token, handleId) => {
     });
 };
 
-export const write = (token, handleId, data) => {
+export const write = (token, handleId, dataBuffer) => {
   const url = `${IMMUT_DATA_ENDPOINT}${handleId}`;
-  const body = (typeof data === 'string') ? data : JSON.stringify(data);
   const payload = {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
+      'Content-Length': dataBuffer.length,
+      'Content-Type': 'text/plain'
     },
-    body : new Buffer(body)
+    body: dataBuffer
   };
   return fetch(url, payload)
     .then((response) => {
