@@ -24,6 +24,21 @@ Available methods are taken from the demo app, and docs (which are currently not
 
 Alternatively you can  access these same methods in the [Safe Beaker Browser (SBB)] (https://github.com/joshuef/beaker/), via `window.safeAuth`, `window.safeNFS` and `window.DNS`;
 
+### Polyfill
+
+safe-js has a polyfill to create `window.safeXXX` functionality when it's not available (non `safe://` sites in [SAFE Beaker Browser](https://github.com/joshuef/beaker), for eg. ).
+
+You can simply include this file in the `<head>` of your page during development and continue using the APIs as they are provided by Safe Beaker Browser.
+
+```html
+<head>
+  <title>safejs site not yet on the network!</title>
+  <!-- replace this link with the actual polyfill location -->
+  <script src="./safe-js/dist/polyfill.js" ></script>            
+</head>
+```
+
+
 ## Examples
 
 Auth:
