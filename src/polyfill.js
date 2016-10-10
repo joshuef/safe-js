@@ -5,6 +5,11 @@ if( ! window.safeAuth )
     window.safeAuth = safejs.auth;
 }
 
+if( ! window.safeNFS )
+{
+    window.safeDNS = safejs.nfs;
+}
+
 if( ! window.safeDNS )
 {
     window.safeDNS = safejs.dns;

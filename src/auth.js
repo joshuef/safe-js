@@ -74,6 +74,7 @@ export const authorise = function( packageData, tokenKey = TOKEN_KEY )
             if ( !response ) 
             {
                 localStorage.clear();
+                //should return token
                 return sendAuthorisationRequest( packageData, tokenKey );
             }
         });
