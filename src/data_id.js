@@ -123,7 +123,6 @@ export const serialise = (token, handleId) => {
 };
 
 export const deserialise = (token, data) => {
-  const url = `${DATA_ID_ENDPOINT}`;
   const payload = {
     method: 'POST',
     body: data
@@ -133,7 +132,7 @@ export const deserialise = (token, data) => {
       'Authorization':'Bearer ' + token
     };
   }
-  return fetch(url, payload)
+  return fetch(DATA_ID_ENDPOINT, payload)
     .then((response) => {
       if (response.status !== 200)
       {

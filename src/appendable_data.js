@@ -329,7 +329,7 @@ export const serialise = (token, handleId) => {
 };
 
 export const deserialise = (token, data) => {
-  const url = `${AD_ENDPOINT}deserialise/${handleId}`;
+  const url = `${AD_ENDPOINT}deserialise`;
   var payload = {
     method: 'POST',
     body: data
@@ -427,7 +427,7 @@ export const toggleFilter = (token, handleId) => {
 };
 
 export const restore = (token, handleId, index) => {
-  var url = `${AD_ENDPOINT}restore/${handleId}`;
+  var url = `${AD_ENDPOINT}restore/${handleId}/${index}`;
   var payload = {
     method: 'PUT',
     headers: {
