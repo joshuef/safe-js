@@ -150,9 +150,7 @@ describe ( 'auth.js', () =>
     {
         it ( 'should exist', () => 
         {
-            expect( sendAuthorisationRequest ).to.exist;
-            expect( sendAuthorisationRequest ).to.be.a.function;
-            expect( sendAuthorisationRequest ).to.not.throw    ;
+            expect( sendAuthorisationRequest ).to.not.exist;
         } );
     }); 
            
