@@ -20,7 +20,16 @@ And use it
 
 Available methods are taken from the demo app, and docs (which are currently not up to date) live here: https://maidsafe.readme.io/docs/introduction .
 
-`safe.nfs` ,`safe.dns` and `safe.auth` are objects available for use.
+`safe.nfs`
+`safe.dns`
+`safe.auth` 
+`structuredData`
+`appendableData`
+`dataId`
+`cipherOpts`
+`signKey`
+
+are objects available for use.
 
 Alternatively you can  access these same methods in the [Safe Beaker Browser (SBB)] (https://github.com/joshuef/beaker/), via `window.safeAuth`, `window.safeNFS` and `window.DNS`;
 
@@ -53,10 +62,11 @@ const app =
     name: "name",
     id: "id",
     version: "v",
-    vendor: "vendor_name"
+    vendor: "vendor_name",
+    permissions: ["SAFE_DRIVE_ACCESS"]
 };
 
-safe.utils.authorise( app, LOCAL_STORAGE_TOKEN_KEY );
+safe.utils.authorise( app );
 ```
 
 getFile:
@@ -74,7 +84,7 @@ safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 [Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. If a `tokenKey` is passed it will check for an existing token in localstorage, if a valid key is found, it will
 
 -  `packageData` - Object containing your app information. This is how the application will authorised in the launcher. 
-- `tokenKey` - Optional string to ID the returned auth token in localStorage (NB. with SBB you'll need to manually save this to the browser's localStorage)
+- `tokenKey` - Optional string to ID the returned auth token in localStorage (SAfe browser will overwrite this with its own storage token)
 
 eg: 
 
@@ -133,11 +143,6 @@ Saves the token stored at `tokenKey` in localStorage
 #### `setUserLongName`
 
 Saves the userLongName stored at `longNameKey` in localStorage
-
-
-#### `sendAuthorisationRequest`
-
-Will authorise an app object on the network, as per `authorise` above, but does not first check for a token in localStorage.
 
 
 

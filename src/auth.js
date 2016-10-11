@@ -1,17 +1,17 @@
 'use strict';
 
-import fetch    from 'isomorphic-fetch';
-import {parseResponse, SERVER} from './utils';
+import fetch                    from 'isomorphic-fetch';
+import url                      from 'url'
+import {parseResponse, SERVER}  from './utils';
 
-const TOKEN_KEY         = 'MaidSafeDemoAppTokenReplaceThis';
-const LONG_NAME_KEY     = 'MaidSafeDemoAppLongNameReplaceThis';
 const dnsList           = null;
 
+const localStorageExists =  ( typeof localStorage === 'undefined' ) ? false : true ;
 
+var tokenStore = {};
 // localStorage shim for node
-if( typeof localStorage === 'undefined' )
+if( !localStorageExists )
 {
-    var boom = 'aye';
     var localStorage = {
         getItem : function(item) {
             return this[ item ];
@@ -57,37 +57,59 @@ export const manifest = {
  * TODO: Remove token check here, this should essentially just be the same as
  * sendAuthRequest
  */
-export const authorise = function( packageData, tokenKey = TOKEN_KEY )
+export const authorise = function( packageData, token )
 {   
-    let token = getAuthToken( tokenKey );
+    let tokenString = token;
+    
+    // for beaker only. Otherwise use localStorage.
+    if( !localStorageExists && this && this.sender )
+    {
+        // get the webcontents url
+        const wholeUrl = this.sender.getURL()
+        const parsedUrl = url.parse( wholeUrl );
+        tokenString = parsedUrl.hostname;
+        
+        //override vendor with the url?
+        if( packageData )
+            packageData.vendor = wholeUrl;
+        
+    }
+    
+    let tokenFromStorage = getAuthToken( tokenString );
 
-    return isTokenValid( token )
+    return isTokenValid( tokenFromStorage )
         .then( response => 
         {
             if( response )
             {
-                return {
-                    token: token
-                }
+                return Promise.resolve( {
+                    token: token,
+                    checkedOut: true
+                });
             }
             
             if ( !response ) 
             {
                 localStorage.clear();
                 //should return token
-                return sendAuthorisationRequest( packageData, tokenKey );
+                return sendAuthorisationRequest( packageData, tokenString );
             }
         });
 };
 
 
 
-export const getAuthToken = function( tokenKey = TOKEN_KEY )
+export const getAuthToken = function( tokenKey )
 {
+    if( !tokenKey )
+    {
+        return Promise.reject( 'tokenKey is missing.');
+    }
+    
     return localStorage.getItem( tokenKey );
 };
 
-export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStorage ) {
+export const getUserLongName = function( longNameKey, localStorage ) {
     return localStorage.getItem(longNameKey);
 };
 
@@ -98,6 +120,7 @@ export const getUserLongName = function( longNameKey = LONG_NAME_KEY, localStora
  */
 export const isTokenValid = function( token ) 
 {
+    
     let url         = SERVER + 'auth';
     var payload     = {
         method: 'GET',
@@ -109,37 +132,50 @@ export const isTokenValid = function( token )
     return fetch( url, payload )
     .then( response => 
     {
-        if (response.status !== 200 && response.status !== 401  )
+        if( response.status === 200 && response.ok )
         {
-            throw new Error( 'Token not valid. SAFE isTokenValid failed with status ' + response.status + ' ' + response.statusText );
-            return false;
+           return Promise.resolve( true );
         }
-        else if( response.status === 401 )
+        else 
         {
-            return false;
+            return Promise.resolve( false );
         }
-        else if( response.status === 200 && response.ok )
-        {
-            
-            return true;
-        }
-        
-        return response;
     });
 };
 
 
-export const setAuthToken = function( tokenKey = TOKEN_KEY, token)
+export const setAuthToken = function( tokenKey, token)
 {
+    if( !tokenKey )
+    {
+        return Promise.reject( 'tokenKey is missing.');
+    }
+    
+    if( !token )
+    {
+        return Promise.reject( 'token is missing.');
+    }
+    
     localStorage.setItem( tokenKey, token );
 };
 
-export const setUserLongName = function(longNameKey = LONG_NAME_KEY, longName) {
+export const setUserLongName = function(longNameKey, longName) {
     localStorage.setItem(longNameKey, longName);
 };
 
-export const sendAuthorisationRequest = function( packageData = {}, tokenKey = TOKEN_KEY )
+const sendAuthorisationRequest = function( packageData, tokenKey )
 {
+    if( !packageData )
+    {
+        return Promise.reject( 'packageData is missing.');
+    }
+    
+    if( !tokenKey )
+    {
+        return Promise.reject( 'tokenKey is missing.');
+    }
+    
+    
     const url = SERVER + 'auth';
 
     let authData = {
@@ -189,7 +225,7 @@ export const sendAuthorisationRequest = function( packageData = {}, tokenKey = T
             throw new Error( 'SAFE sendAuthorisationRequest failed to parse token from response');
         }
 
-        setAuthToken( tokenKey, receivedToken);
+        setAuthToken( tokenKey, receivedToken );
 
         return response
     });
