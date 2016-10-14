@@ -2,7 +2,7 @@
 
 import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
-import {parseResponse, SERVER} from './utils';
+import {parseResponse, SERVER, SD_DEFAULT_TYPE_TAG} from './utils';
 
 const SD_ENDPOINT = SERVER + 'structured-data/';
 
@@ -14,7 +14,11 @@ export const manifest = {
   post: 'promise',
   readData: 'promise',
   updateData: 'promise',
-  dropHandle: 'promise'
+  dropHandle: 'promise',
+  serialise: 'promise',
+  deserialise: 'promise',
+  remove: 'promise',
+  getMetadata: 'promise'
 };
 
 /**
@@ -25,7 +29,7 @@ export const manifest = {
  * @param data- as base64 string
  * @param cipherOptsHandle
  */
-export const create = (token, name, typeTag = 501, data, cipherOptsHandle) => {
+export const create = (token, name, typeTag = SD_DEFAULT_TYPE_TAG, data, cipherOptsHandle) => {
   if (typeof name === 'string') {
     name = crypto.createHash('sha256').update(name).digest('base64');
   }
@@ -170,9 +174,9 @@ export const post = (token, handleId) => {
     });
 };
 
-export const readData = (token, handleId) => {
-  var url = SD_ENDPOINT + handleId;
-  var payload = {
+export const readData = (token, handleId, version) => {
+  const url = `${SD_ENDPOINT}${handleId}/${version}`;
+  let payload = {
     method: 'GET'
   };
   if (token) {
@@ -210,5 +214,98 @@ export const dropHandle = (token, handleId) => {
         });
       }
       return response;
+    });
+};
+
+export const serialise = (token, handleId) => {
+  const url = `${SD_ENDPOINT}serialise/${handleId}`;
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Serialise StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response.buffer();
+    });
+};
+
+export const deserialise = (token, data) => {
+  const url = `${SD_ENDPOINT}deserialise`;
+  const payload = {
+    method: 'POST',
+    body: data
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Deserialise StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
+export const remove = (token, handleId) => {
+  const url = `${SD_ENDPOINT}${handleId}`;
+  const payload = {
+    method: 'DELETE'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Delete StructuredData failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response;
+    });
+};
+
+export const getMetadata = (token, handleId) => {
+  const url = `${SD_ENDPOINT}metadata/${handleId}`;
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Get StructuredData meta data failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
     });
 };

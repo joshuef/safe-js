@@ -6,3 +6,4 @@ export * as dataId          from './data_id';
 export * as nfs             from './nfs';
 export * as signKey         from './sign_key';
 export * as structuredData  from './structured_data';
+export * as immutableData   from './immutable_data';
