@@ -8,17 +8,17 @@ const SD_ENDPOINT = SERVER + 'structured-data/';
 
 export const manifest = {
   create: 'promise',
-  getHandle: 'promise',
+  delete: 'promise',
+  dropHandle: 'promise',
+  deserialise: 'promise',
   getDataIdHandle: 'promise',
+  getHandle: 'promise',
+  getMetadata: 'promise',
   put: 'promise',
   post: 'promise',
   readData: 'promise',
-  updateData: 'promise',
-  dropHandle: 'promise',
   serialise: 'promise',
-  deserialise: 'promise',
-  remove: 'promise',
-  getMetadata: 'promise'
+  updateData: 'promise'
 };
 
 /**
@@ -264,7 +264,7 @@ export const deserialise = (token, data) => {
     });
 };
 
-export const remove = (token, handleId) => {
+export const delete = (token, handleId) => {
   const url = `${SD_ENDPOINT}${handleId}`;
   const payload = {
     method: 'DELETE'
