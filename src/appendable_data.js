@@ -15,6 +15,7 @@ export const manifest = {
   getDataIdAt: 'promise',
   append: 'promise',
   getMetadata: 'promise',
+  isSizeValid: 'promise',
   removeAt: 'promise',
   addToFilter: 'promise',
   removeFromFilter: 'promise',
@@ -78,6 +79,30 @@ export const getHandle = (token, dataIdHandle) => {
     };
   }
   const url = AD_ENDPOINT + 'handle/' + dataIdHandle;
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error({ error: 'Get AppendableData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
+
+export const isSizeValid = (token, handleId) => {
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      Authorization: 'Bearer ' + token
+    };
+  }
+  const url = AD_ENDPOINT + 'validate-size/' + handleId;
   return fetch(url, payload)
     .then((response) => {
       if (response.status !== 200)

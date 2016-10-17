@@ -8,7 +8,7 @@ const SD_ENDPOINT = SERVER + 'structured-data/';
 
 export const manifest = {
   create: 'promise',
-  delete: 'promise',
+  del: 'promise',
   dropHandle: 'promise',
   deserialise: 'promise',
   getDataIdHandle: 'promise',
@@ -18,7 +18,8 @@ export const manifest = {
   post: 'promise',
   readData: 'promise',
   serialise: 'promise',
-  updateData: 'promise'
+  updateData: 'promise',
+  makeUnclaimable: 'promise'
 };
 
 /**
@@ -264,7 +265,7 @@ export const deserialise = (token, data) => {
     });
 };
 
-export const delete = (token, handleId) => {
+export const del = (token, handleId) => {
   const url = `${SD_ENDPOINT}${handleId}`;
   const payload = {
     method: 'DELETE'
@@ -307,5 +308,28 @@ export const getMetadata = (token, handleId) => {
         });
       }
       return parseResponse(response);
+    });
+};
+
+export const makeUnclaimable = (token, handleId) => {
+  const url = `${SD_ENDPOINT}unclaim/${handleId}`;
+  const payload = {
+    method: 'DELETE'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Make StructuredData Unclaimable failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response;
     });
 };
