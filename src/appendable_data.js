@@ -107,7 +107,7 @@ export const isSizeValid = (token, handleId) => {
     .then((response) => {
       if (response.status !== 200)
       {
-        throw new Error({ error: 'Get AppendableData handle failed with status ' + response.status + ' ' + response.statusText,
+        throw new Error({ error: 'Validating AppendableData size failed with status ' + response.status + ' ' + response.statusText,
           errorPayload: payload,
           errorUrl : url
         });

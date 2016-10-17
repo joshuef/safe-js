@@ -19,7 +19,8 @@ export const manifest = {
   readData: 'promise',
   serialise: 'promise',
   updateData: 'promise',
-  makeUnclaimable: 'promise'
+  makeUnclaimable: 'promise',
+  isSizeValid: 'promise'
 };
 
 /**
@@ -105,6 +106,29 @@ export const getHandle = (token, dataIdHandle) => {
           errorPayload: payload,
           errorUrl : url
         }));
+      }
+      return parseResponse(response);
+    });
+};
+
+export const isSizeValid = (token, handleId) => {
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      Authorization: 'Bearer ' + token
+    };
+  }
+  const url = SD_ENDPOINT + 'validate-size/' + handleId;
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error({ error: 'Validating StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
       }
       return parseResponse(response);
     });
