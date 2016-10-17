@@ -15,13 +15,19 @@ export const manifest = {
   getDataIdAt: 'promise',
   append: 'promise',
   getMetadata: 'promise',
+  isSizeValid: 'promise',
   removeAt: 'promise',
   addToFilter: 'promise',
   removeFromFilter: 'promise',
   getSignKeyAt: 'promise',
   clearAll: 'promise',
   serialise: 'promise',
-  dropHandle: 'promise'
+  deserialise: 'promise',
+  dropHandle: 'promise',
+  getEncryptKey: 'promise',
+  dropEncryptKeyHandle: 'promise',
+  toggleFilter: 'promise',
+  restore: 'promise',
 };
 
 /**
@@ -78,6 +84,30 @@ export const getHandle = (token, dataIdHandle) => {
       if (response.status !== 200)
       {
         throw new Error({ error: 'Get AppendableData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
+
+export const isSizeValid = (token, handleId) => {
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      Authorization: 'Bearer ' + token
+    };
+  }
+  const url = AD_ENDPOINT + 'validate-size/' + handleId;
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error({ error: 'Validating AppendableData size failed with status ' + response.status + ' ' + response.statusText,
           errorPayload: payload,
           errorUrl : url
         });
@@ -319,7 +349,28 @@ export const serialise = (token, handleId) => {
       {
         throw new Error('Clear data from AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
-      return response;
+      return response.buffer();
+    });
+};
+
+export const deserialise = (token, data) => {
+  const url = `${AD_ENDPOINT}deserialise`;
+  var payload = {
+    method: 'POST',
+    body: data
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error('Deserialise AppendableData handle id failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return parseResponse(response);
     });
 };
 
@@ -341,6 +392,78 @@ export const dropHandle = (token, handleId) => {
           errorPayload: payload,
           errorUrl : url
         });
+      }
+      return response;
+    });
+};
+
+export const getEncryptKey = (token, handleId) => {
+  var url = `${AD_ENDPOINT}encrypt-key/${handleId}`;
+  var payload = {
+    method: 'GET',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Get AppendableData encrypted key handle failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return parseResponse(response);
+    });
+};
+
+export const dropEncryptKeyHandle = (token, handleId) => {
+  var url = `${AD_ENDPOINT}encrypt-key/${handleId}`;
+  var payload = {
+    method: 'DELETE',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Delete AppendableData encrypted key handle failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
+export const toggleFilter = (token, handleId) => {
+  var url = `${AD_ENDPOINT}toggle-filter/${handleId}`;
+  var payload = {
+    method: 'PUT',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Toggle AppendableData filter failed with status ' + response.status + ' ' + response.statusText );
+      }
+      return response;
+    });
+};
+
+export const restore = (token, handleId, index) => {
+  var url = `${AD_ENDPOINT}restore/${handleId}/${index}`;
+  var payload = {
+    method: 'PUT',
+    headers: {
+      'Authorization':'Bearer ' + token
+    }
+  };
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( 'Restore AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
       return response;
     });

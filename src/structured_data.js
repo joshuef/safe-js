@@ -2,19 +2,25 @@
 
 import crypto from 'crypto';
 import fetch from 'isomorphic-fetch';
-import {parseResponse, SERVER} from './utils';
+import {parseResponse, SERVER, SD_DEFAULT_TYPE_TAG} from './utils';
 
 const SD_ENDPOINT = SERVER + 'structured-data/';
 
 export const manifest = {
   create: 'promise',
-  getHandle: 'promise',
+  del: 'promise',
+  dropHandle: 'promise',
+  deserialise: 'promise',
   getDataIdHandle: 'promise',
+  getHandle: 'promise',
+  getMetadata: 'promise',
   put: 'promise',
   post: 'promise',
   readData: 'promise',
+  serialise: 'promise',
   updateData: 'promise',
-  dropHandle: 'promise'
+  makeUnclaimable: 'promise',
+  isSizeValid: 'promise'
 };
 
 /**
@@ -25,7 +31,7 @@ export const manifest = {
  * @param data- as base64 string
  * @param cipherOptsHandle
  */
-export const create = (token, name, typeTag = 501, data, cipherOptsHandle) => {
+export const create = (token, name, typeTag = SD_DEFAULT_TYPE_TAG, data, cipherOptsHandle) => {
   if (typeof name === 'string') {
     name = crypto.createHash('sha256').update(name).digest('base64');
   }
@@ -105,6 +111,29 @@ export const getHandle = (token, dataIdHandle) => {
     });
 };
 
+export const isSizeValid = (token, handleId) => {
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      Authorization: 'Bearer ' + token
+    };
+  }
+  const url = SD_ENDPOINT + 'validate-size/' + handleId;
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error({ error: 'Validating StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
 export const getDataIdHandle = (token, handleId) => {
   const payload = {
     method: 'GET'
@@ -170,9 +199,9 @@ export const post = (token, handleId) => {
     });
 };
 
-export const readData = (token, handleId) => {
-  var url = SD_ENDPOINT + handleId;
-  var payload = {
+export const readData = (token, handleId, version) => {
+  const url = `${SD_ENDPOINT}${handleId}/${version}`;
+  let payload = {
     method: 'GET'
   };
   if (token) {
@@ -205,6 +234,122 @@ export const dropHandle = (token, handleId) => {
       if (response.status !== 200)
       {
         throw new Error( { error: 'Drop StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response;
+    });
+};
+
+export const serialise = (token, handleId) => {
+  const url = `${SD_ENDPOINT}serialise/${handleId}`;
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Serialise StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response.buffer();
+    });
+};
+
+export const deserialise = (token, data) => {
+  const url = `${SD_ENDPOINT}deserialise`;
+  const payload = {
+    method: 'POST',
+    body: data
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Deserialise StructuredData handle failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
+export const del = (token, handleId) => {
+  const url = `${SD_ENDPOINT}${handleId}`;
+  const payload = {
+    method: 'DELETE'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Delete StructuredData failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return response;
+    });
+};
+
+export const getMetadata = (token, handleId) => {
+  const url = `${SD_ENDPOINT}metadata/${handleId}`;
+  const payload = {
+    method: 'GET'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Get StructuredData meta data failed with status ' + response.status + ' ' + response.statusText,
+          errorPayload: payload,
+          errorUrl : url
+        });
+      }
+      return parseResponse(response);
+    });
+};
+
+export const makeUnclaimable = (token, handleId) => {
+  const url = `${SD_ENDPOINT}unclaim/${handleId}`;
+  const payload = {
+    method: 'DELETE'
+  };
+  if (token) {
+    payload.headers = {
+      'Authorization':'Bearer ' + token
+    };
+  }
+  return fetch(url, payload)
+    .then((response) => {
+      if (response.status !== 200)
+      {
+        throw new Error( { error: 'Make StructuredData Unclaimable failed with status ' + response.status + ' ' + response.statusText,
           errorPayload: payload,
           errorUrl : url
         });
