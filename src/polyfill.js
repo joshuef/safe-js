@@ -40,3 +40,8 @@ if( ! window.safeSignKey )
     window.safeSignKey = safejs.signKey;
 }
 
+if( ! window.safeImmutableData )
+{
+    window.safeImmutableData = safejs.signKey;
+}
+
