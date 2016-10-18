@@ -1,12 +1,13 @@
 {
   "name": "safe-js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Alpha stage. Still promisifying. SAFE Network API helper library. Built to be isomoprhic and promisy.",
   "main": "dist/index.js",
   "scripts": {
     "polyfill": "webpack",
     "build": "babel src --presets babel-preset-es2015 --out-dir dist && npm run polyfill",
     "test": "karma start",
+    "test:build": "karma start && npm run build",
     "test:travis": "karma start --browsers PhantomJS",
     "tdd": "karma start --auto-watch --single-run false",
     "publish-please": "publish-please",
