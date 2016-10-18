@@ -1,7 +1,10 @@
 'use strict';
 
 import fetch    from 'isomorphic-fetch';
-import {parseResponse, SERVER, ROOT_PATH }  from './utils';
+import { parseResponse,
+	 checkBooleanResponse,
+	 SERVER,
+	 ROOT_PATH }  from './utils';
 
 
 /*
@@ -22,7 +25,6 @@ export const manifest = {
 }
 
 
-
 // create new directory
 export const createDir = function( token, dirPath, isPrivate, userMetadata, isPathShared = false) 
 {
@@ -32,24 +34,17 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
     var payload = {
         method: 'POST',
         headers: {
-            'Authorization' : 'Bearer ' + token
+	    'Authorization' : 'Bearer ' + token,
+	    'Content-Type'  : 'application/json'
         },
-        body: {
+	body: JSON.stringify({
             isPrivate: isPrivate,
             userMetabody: userMetadata
-        }
+	})
     };
     return fetch( url, payload)
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( { error: 'SAFE createDir failed with status ' + response.status + ' ' + response.statusText,
-                                errorPayload: payload,
-                                errorUrl : url
-                            });
-        }
-
-        return response
+	return checkBooleanResponse( response );
     });
 };
 
@@ -76,16 +71,7 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
     
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE createFile failed with status ' + response.status + ' ' + response.statusText );
-        }
-
-        if( response.status === 200 )
-        {
-            return response;
-        }
-
+	return checkBooleanResponse( response );
     });
 };
 
@@ -102,12 +88,8 @@ export const deleteDir = function( token, dirPath, isPathShared = false ) {
     };
     return fetch(url, payload)
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE deleteDir failed with status ' + response.status + ' ' + response.statusText );
-        }
+	return checkBooleanResponse( response );
 
-        return response
     });
 };
 
@@ -123,12 +105,8 @@ export const deleteFile = function( token, filePath, isPathShared = false )
     };
     return fetch(url, payload)
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE deleteFile failed with status ' + response.status + ' ' + response.statusText );
-        }
+	return checkBooleanResponse( response );
 
-        return response
     });
 };
 
@@ -145,12 +123,8 @@ export const getDir = function(token, dirPath, isPathShared = false) {
     };
     return fetch( url, payload)
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE getDir failed with status ' + response.status + ' ' + response.statusText );
-        }
+	return parseResponse( response )
 
-        return response
     });
 };
 
@@ -166,23 +140,8 @@ export const getFile = function( token, filePath, isPathShared = false ) {
     
     return fetch(url, payload)
         .then( (response) => {
-            if (response.status !== 200 && response.status !== 206)
-            {
-                throw new Error( 'SAFE getFile failed with status ' + response.status + ' ' + response.statusText );
-            }
+	    return response;
 
-            if( response.status === 200 )
-            {
-                return response.json().then( json =>
-                    {
-                        response.__parsedResponseBody__ = json
-                        
-                        return response;
-                    })
-            }
-            else {
-                return response;
-            }
         })
 
 };
@@ -211,20 +170,15 @@ export const rename = function(token, path, newName, isFile, metadata, isPathSha
     
     return fetch( url, payload)
     .then( (response) => {
-        
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error('SAFE rename failed with status ' + response.status + ' ' + response.statusText );
-        }
+	return checkBooleanResponse( response )
 
-        return response
     });
 };
 
-export const renameDir = function(token, dirPath, isPathShared = false, newName, callback) {
-    return rename(dirPath, isPathShared, newName, false, callback);
+export const renameDir = function(token, dirPath, newName, metadata,  isPathShared = false) {
+    return rename(token, dirPath, newName, isPathShared );
 };
 
-export const renameFile = function(oldPath, isPathShared = false, newPath, callback) {
-    return rename(dirPath, isPathShared, newName, true, callback);
+export const renameFile = function(token, oldPath, newName, metadata, isPathShared = false ) {
+    return rename(token, oldPath, newName, true );
 };

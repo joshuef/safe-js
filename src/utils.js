@@ -11,9 +11,8 @@ export const ROOT_PATH =
 
 
 
-export const parseResponse = (response) => {
-
-    console.log( "RESPONSE BEING DEALT WITH IN PARSE RESPONSE", response.status );
+export const parseResponse = (response) =>
+{
     if( response.status !== 200 )
     {
 	Promise.reject( response );
@@ -21,3 +20,16 @@ export const parseResponse = (response) => {
 
     return response.json()
 };
+
+
+export const checkBooleanResponse = ( response ) =>
+{
+    if( response.status !== 200 )
+    {
+	Promise.reject( response );
+    }
+    else {
+	return true;
+    }
+
+}

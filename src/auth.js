@@ -60,7 +60,7 @@ export const manifest = {
 export const authorise = function( packageData, token )
 {   
     let tokenString = token;
-    
+
     // for beaker only. Otherwise use localStorage.
     if( !localStorageExists && this && this.sender )
     {
