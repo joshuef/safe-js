@@ -161,8 +161,8 @@ Creates a SAFE DNS Service. (https://api.safedev.org/dns/add-service.html)
 - `token` - (`string`) -  auth token
 - `longName` - longName to add service to.
 - `serviceName` - Name of service to create.
-- `isPathShared` - Name of service to create
 - `serviceHomePathDir` - The full path of the directory to be served by this service.
+- `isPathShared` - Name of service to create
 
 Returns a promise which resolves as truthy upon success.
 

@@ -61,19 +61,19 @@ describe ( 'dns.js', () =>
         it( 'should throw errors if type mismatch ');
         it( 'should check payload sent with fetch is correct ');
         
-        it( 'should return a true with a 200 response', ( done ) =>
+	it( 'should return json with a successful response', ( done ) =>
         {
-            fetchMock.post('*', 200 );
+	    let json = { string: "like this" }
+	    fetchMock.post('*', json );
                 
             createLongName( 'x', 'y' )
                 .catch( done )
                 .then( response => {
                     expect( response ).to.exist;
-                    expect( response ).to.be.true;
+		    expect( response ).to.be.json;
+		    expect( response.string ).to.equal( json.string );
                     done();
                 } )
-                
-        
         } );
         
         it( 'should return an error with a non 400 response', ( done ) =>
@@ -85,7 +85,7 @@ describe ( 'dns.js', () =>
                 {
                     expect( err ).to.exist;
                     expect( err ).to.be.a.string;
-                    expect( err ).to.match(/^SAFE createLongName failed with status 400/);
+		    // expect( err ).to.match(/^SAFE createLongName failed with status 400/);
                     done();
                 } );
                         

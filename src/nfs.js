@@ -1,15 +1,7 @@
 'use strict';
 
 import fetch    from 'isomorphic-fetch';
-
-const ROOT_PATH =
-{
-    APP: 'app',
-    DRIVE: 'drive'
-};
-
-const VERSION = '0.5';
-const SERVER = 'http://localhost:8100/' + VERSION + '/';
+import {parseResponse, SERVER, ROOT_PATH }  from './utils';
 
 
 /*

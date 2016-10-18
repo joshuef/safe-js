@@ -201,32 +201,9 @@ const sendAuthorisationRequest = function( packageData, tokenKey )
     {
         return parseResponse(response);
     })
-    .then( response => {
+    .then( parsedResponse => {
+	setAuthToken( tokenKey, parsedResponse.token );
         
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE sendAuthorisationRequest failed with status ' +
-                response.status + ' ' + response.body.description );
-        }
-
-        const body          = response.body;
-        const headers       = response.headers;
-        const receivedToken = response.__parsedResponseBody__.token;
-
-        if (!body && !headers)
-        {
-
-            throw new Error( 'SAFE sendAuthorisationRequest failed to connect to Launcher');
-        }
-
-
-        if( !receivedToken )
-        {
-            throw new Error( 'SAFE sendAuthorisationRequest failed to parse token from response');
-        }
-
-        setAuthToken( tokenKey, receivedToken );
-
-        return response
+	return parsedResponse;
     });
 };

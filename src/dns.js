@@ -1,7 +1,7 @@
 'use strict';
 
 import fetch    from 'isomorphic-fetch';
-import {parseResponse, SERVER} from './utils';
+import { parseResponse, SERVER, ROOT_PATH } from './utils';
 
 /*
 * Manifest for Beaker: 
@@ -10,34 +10,34 @@ import {parseResponse, SERVER} from './utils';
 export const manifest = {
     addService          : 'promise',
     createLongName      : 'promise',
-    listLongNames              : 'promise',
+    listLongNames       : 'promise',
     listServices        : 'promise'
 };
 
 
   // add service
- export const addService = function( token, longName, serviceName, isPathShared, serviceHomeDirPath ) {
+ export const addService = function( token, longName, serviceName, serviceHomeDirPath, isPathShared ) {
     let url = SERVER + 'dns';
+    let rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+
+
     var payload = {
       method: 'PUT',
       headers: {
-        Authorization: 'Bearer ' + token
+	Authorization: 'Bearer ' + token,
+	'Content-Type': 'application/json'
       },
-      data: {
-        longName: longName,
-        serviceName: serviceName,
-        isPathShared: isPathShared,
-        serviceHomeDirPath: serviceHomeDirPath
-      }
+	body: JSON.stringify ({
+	  longName: longName,
+	  serviceName: serviceName,
+	  rootPath: rootPath,
+	  serviceHomeDirPath: serviceHomeDirPath
+      })
     };
+
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE addService failed with status ' + response.status + ' ' + response.statusText );
-        }
-
-        return response
+	return parseResponse( response );
     });
   };
 
@@ -53,15 +53,7 @@ export const manifest = {
     };
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            return Promise.reject( 'SAFE createLongName failed with status ' + response.status + ' ' + response.details  );
-        }
-        
-        if( response.ok )
-        {
-            return true;
-        }
+	return parseResponse( response );
     })
   };
 
@@ -74,13 +66,9 @@ export const manifest = {
         Authorization: 'Bearer ' + token
       }
     };
+
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200)
-        {
-            throw new Error( 'SAFE listLongNames failed with status ' + response.status + ' ' + response.statusText );
-        }
-
         return parseResponse(response);
     });
   };
@@ -96,11 +84,6 @@ export const manifest = {
     };
     return fetch( url, payload )
     .then( (response) => {
-        if (response.status !== 200 && response.status !== 206)
-        {
-            throw new Error( 'SAFE listServices failed with status ' + response.status + ' ' + response.statusText );
-        }
-
         return parseResponse(response);
     });
   };
