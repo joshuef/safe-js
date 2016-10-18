@@ -10,7 +10,7 @@ import {parseResponse, SERVER} from './utils';
 export const manifest = {
     addService          : 'promise',
     createLongName      : 'promise',
-    getDns              : 'promise',
+    listLongNames              : 'promise',
     listServices        : 'promise'
 };
 
@@ -66,7 +66,7 @@ export const manifest = {
   };
 
   // get dns list
- export const getDns = function( token ) {
+ export const listLongNames = function( token ) {
     let url = SERVER + 'dns';
     var payload = {
       method: 'GET',
@@ -78,7 +78,7 @@ export const manifest = {
     .then( (response) => {
         if (response.status !== 200)
         {
-            throw new Error( 'SAFE getDns failed with status ' + response.status + ' ' + response.statusText );
+            throw new Error( 'SAFE listLongNames failed with status ' + response.status + ' ' + response.statusText );
         }
 
         return parseResponse(response);

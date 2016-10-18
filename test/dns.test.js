@@ -1,7 +1,7 @@
 import { 
     addService
     , createLongName
-    , getDns
+    , listLongNames
     , listServices
     , manifest
 } from '../src/dns';
@@ -99,12 +99,12 @@ describe ( 'dns.js', () =>
     
     
     
-    describe ( 'getDns', () => 
+    describe ( 'listLongNames', () => 
     {
         it ( 'should exist', () => 
         {
-            expect( getDns ).to.exist;
-            expect( getDns ).to.be.a.function;
+            expect( listLongNames ).to.exist;
+            expect( listLongNames ).to.be.a.function;
         
         } );
         

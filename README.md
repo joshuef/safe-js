@@ -171,7 +171,7 @@ Creates a SAFE DNS LongName / Public Id. (https://api.safedev.org/dns/create-lon
 Returns a promise which resolves as truthy upon success.
 
 
-#### `getDns`
+#### `listLongNames`
 
 List all long names registered by current user (https://api.safedev.org/dns/list-long-names.html)
 
