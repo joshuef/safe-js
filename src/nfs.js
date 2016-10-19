@@ -39,12 +39,15 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
         },
 	body: JSON.stringify({
             isPrivate: isPrivate,
-            userMetabody: userMetadata
-	})
+            metadata: userMetadata
+		})
     };
+	
+	console.log( "CREATING DIR", url, payload );
+	
     return fetch( url, payload)
-    .then( (response) => {
-	return checkBooleanResponse( response );
+    	.then( (response) => {
+			return checkBooleanResponse( response );
     });
 };
 
@@ -68,6 +71,8 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
     {
         payload.headers.Metadata = metadata;
     }
+	
+	console.log( "creating file payload", url, payload );
     
     return fetch( url, payload )
     .then( (response) => {
@@ -149,10 +154,10 @@ export const getFile = function( token, filePath, isPathShared = false ) {
 //action is move or copy
 export const move = function( token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) {
 
-    // console.log( "MOVING  a fillleeeee" );
-    if ( action !== 'move' || action !== 'copy')
+    console.log( "MOVING  a fillleeeee", action );
+    if ( ! action.match(/move|copy/) )
     {
-	Promise.reject('invalid action for move')
+		return Promise.reject('invalid action for move, was: ', action );
     }
 
     var url = SERVER + 'nfs/movefile'
@@ -213,9 +218,9 @@ export const rename = function(token, path, newName, isFile, metadata, isPathSha
 };
 
 export const renameDir = function(token, dirPath, newName, metadata,  isPathShared = false) {
-    return rename(token, dirPath, newName, isPathShared );
+    return rename(token, dirPath, newName, false, metadata, isPathShared );
 };
 
 export const renameFile = function(token, oldPath, newName, metadata, isPathShared = false ) {
-    return rename(token, oldPath, newName, true );
+    return rename(token, oldPath, newName, true, metadata );
 };

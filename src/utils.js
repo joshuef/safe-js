@@ -15,7 +15,11 @@ export const parseResponse = (response) =>
 {
     if( response.status !== 200 )
     {
-	Promise.reject( response );
+        
+        return response.clone().json().then( json => 
+        {
+            return Promise.reject( json );
+        }) 
     }
 
     return response.json()
@@ -24,13 +28,17 @@ export const parseResponse = (response) =>
 
 export const checkBooleanResponse = ( response ) =>
 {
-    console.log( "RESPONSEE?????", response );
+    // console.log( "RESPONSEE?????", response );
+    
     if( response.status !== 200 )
     {
-	Promise.reject( response );
+        return response.clone().json().then( json => 
+        {
+            return Promise.reject( json );
+        }) 
     }
     else {
-	return true;
+	       return true;
     }
 
 }
