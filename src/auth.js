@@ -130,17 +130,17 @@ export const isTokenValid = function( token )
     };
 
     return fetch( url, payload )
-    .then( response => 
-    {
-        if( response.status === 200 && response.ok )
+        .then( response => 
         {
-           return Promise.resolve( true );
-        }
-        else 
-        {
-            return Promise.resolve( false );
-        }
-    });
+            if( response.status === 200 && response.ok )
+            {
+               return Promise.resolve( true );
+            }
+            else 
+            {
+                return Promise.resolve( false );
+            }
+        });
 };
 
 

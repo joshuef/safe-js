@@ -9,36 +9,43 @@ export const ROOT_PATH =
     DRIVE: 'drive'
 };
 
+const failParsing = response => 
+{
+    //handle unauthorised requests
+    if( response.status === 401 )
+    {
+        return Promise.reject( response.statusText );
+    }
+    
+    return response.clone().json().then( json => 
+    {
+        return Promise.reject( json );
+    }) ;
+}
 
 
 export const parseResponse = (response) =>
 {
     if( response.status !== 200 )
     {
-        
-        return response.clone().json().then( json => 
-        {
-            return Promise.reject( json );
-        }) 
+        return failParsing( response );
     }
-
-    return response.json()
+    else 
+    {    
+        return response.json()
+    }
 };
 
 
 export const checkBooleanResponse = ( response ) =>
-{
-    // console.log( "RESPONSEE?????", response );
-    
+{    
     if( response.status !== 200 )
     {
-        return response.clone().json().then( json => 
-        {
-            return Promise.reject( json );
-        }) 
+        return failParsing( response );
     }
-    else {
-	       return true;
+    else 
+    {
+	    return true;
     }
 
 }

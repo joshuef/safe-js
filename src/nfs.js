@@ -44,9 +44,7 @@ export const createDir = function( token, dirPath, isPrivate, userMetadata, isPa
             metadata: userMetadata
 		})
     };
-	
-	console.log( "CREATING DIR", url, payload );
-	
+		
     return fetch( url, payload)
     	.then( (response) => {
 			return checkBooleanResponse( response );
@@ -73,13 +71,11 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
     {
         payload.headers.Metadata = metadata;
     }
-	
-	console.log( "creating file payload", url, payload );
     
     return fetch( url, payload )
-    .then( (response) => {
-	return checkBooleanResponse( response );
-    });
+	    .then( (response) => {
+			return checkBooleanResponse( response );
+	    });
 };
 
 
@@ -188,9 +184,6 @@ const move = function( fileOrDir, token, srcRootPath, srcPath, destRootPath , de
 		url = SERVER + 'nfs/movedir' ;
 	}
 
-    console.log( "MOVING  a " + fileOrDir, action );
-
-
     var payload = {
 	method: 'POST',
 	headers: {
@@ -205,11 +198,8 @@ const move = function( fileOrDir, token, srcRootPath, srcPath, destRootPath , de
 		"destRootPath": destRootPath,
 		"destPath": destPath,
 		"action": action
-	    }
-	)
-    };
-
-    console.log( "moving a file, " , url, payload );
+	    })
+	};
 
     return fetch(url, payload)
 	.then( (response) => {
