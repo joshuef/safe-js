@@ -50,9 +50,9 @@ You can simply include this file in the `<head>` of your page during development
 
 ## Examples
 
-Auth:
+Auth (`window.safeAuth` methods in the SAFE browser):
 ```js
-import * as safe from 'safe-js';
+import { auth } from 'safe-js';
 import packageData from '../package.json'
 
 const LOCAL_STORAGE_TOKEN_KEY = 'BOOM';
@@ -66,25 +66,29 @@ const app =
     permissions: ["SAFE_DRIVE_ACCESS"]
 };
 
-safe.utils.authorise( app );
+auth.authorise( app );
 ```
 
 getFile:
 
 ```js
-safe.nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
+import { nfs } from 'safe-js';
+nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 ```
 
 
 ## API
 
 ### auth.js
+
+(`window.safeAuth` methods in the SAFE browser)
+
 #### `authorise`
 
 [Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. If a `tokenKey` is passed it will check for an existing token in localstorage, if a valid key is found, it will
 
 -  `packageData` - Object containing your app information. This is how the application will authorised in the launcher. 
-- `tokenKey` - Optional string to ID the returned auth token in localStorage (SAfe browser will overwrite this with its own storage token)
+- `tokenKey` - Optional string to ID the returned auth token in localStorage (SAFE browser will overwrite this with its own storage token)
 
 eg: 
 
@@ -146,7 +150,9 @@ Saves the userLongName stored at `longNameKey` in localStorage
 
 
 
-### dns.js
+### dns.js 
+
+(`window.safeDNS` methods in the SAFE browser)
 
 #### `addService`
 
@@ -202,6 +208,9 @@ Returns a JSON array of service names.
 ```
 
 ### nfs.js
+
+(`window.safeNFS` methods in the SAFE browser)
+
 #### `createDir`
 
 (https://api.safedev.org/nfs/directory/create-directory.html)
