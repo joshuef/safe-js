@@ -18,6 +18,8 @@ export const manifest = {
     deleteFile              : 'promise',
     getDir                  : 'promise',
     getFile                 : 'promise',
+    moveFile                : 'promise',
+    moveDir                 : 'promise',
     // modifyFileContent       : 'promise',
     rename                  : 'promise',
     renameDir               : 'promise',
@@ -151,16 +153,44 @@ export const getFile = function( token, filePath, isPathShared = false ) {
 
 };
 
-//action is move or copy
-export const move = function( token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) {
-
-    console.log( "MOVING  a fillleeeee", action );
-    if ( ! action.match(/move|copy/) )
-    {
+export const moveDir = function( token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) 
+{
+	if ( ! action.match(/move|copy/) )
+	{
 		return Promise.reject('invalid action for move, was: ', action );
-    }
+	}
+	
+	return move( 'dir', token, srcRootPath, srcPath, destRootPath , destPath, action );
+}
 
-    var url = SERVER + 'nfs/movefile'
+export const moveFile = function( token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) 
+{
+	if ( ! action.match(/move|copy/) )
+	{
+		return Promise.reject('invalid action for move, was: ', action );
+	}
+	
+	return move( 'file', token, srcRootPath, srcPath, destRootPath , destPath, action );
+}
+
+//action is move or copy
+const move = function( fileOrDir, token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) 
+{
+	if ( ! fileOrDir.match(/file|dir/) )
+	{
+		return Promise.reject('invalid target for move, should be "file" or "dir", was: ', fileOrDir );
+	}
+	
+	let url = SERVER + 'nfs/movefile';
+	
+	if( fileOrDir === 'dir' )
+	{
+		url = SERVER + 'nfs/movedir' ;
+	}
+
+    console.log( "MOVING  a " + fileOrDir, action );
+
+
     var payload = {
 	method: 'POST',
 	headers: {
