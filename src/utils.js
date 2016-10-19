@@ -24,6 +24,7 @@ export const parseResponse = (response) =>
 
 export const checkBooleanResponse = ( response ) =>
 {
+    console.log( "RESPONSEE?????", response );
     if( response.status !== 200 )
     {
 	Promise.reject( response );

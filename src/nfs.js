@@ -146,6 +146,43 @@ export const getFile = function( token, filePath, isPathShared = false ) {
 
 };
 
+//action is move or copy
+export const move = function( token, srcRootPath, srcPath, destRootPath , destPath, action = 'move' ) {
+
+    // console.log( "MOVING  a fillleeeee" );
+    if ( action !== 'move' || action !== 'copy')
+    {
+	Promise.reject('invalid action for move')
+    }
+
+    var url = SERVER + 'nfs/movefile'
+    var payload = {
+	method: 'POST',
+	headers: {
+	    'Authorization':'Bearer ' + token,
+	    'Content-Type' : 'application/json'
+
+	},
+	body: JSON.stringify(
+	    {
+		"srcRootPath": srcRootPath,
+		"srcPath": srcPath,
+		"destRootPath": destRootPath,
+		"destPath": destPath,
+		"action": action
+	    }
+	)
+    };
+
+    console.log( "moving a file, " , url, payload );
+
+    return fetch(url, payload)
+	.then( (response) => {
+	    return checkBooleanResponse( response );
+	})
+
+};
+
 
 export const rename = function(token, path, newName, isFile, metadata, isPathShared = false) {
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;

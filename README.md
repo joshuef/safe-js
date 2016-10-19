@@ -299,7 +299,7 @@ Get a file.
 - `filePath` - (`string`) file path
 - `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
 
-Returns a Promise which resolves to the file data upon success.
+Returns a Promise which resolves to the response.
 
 
 
