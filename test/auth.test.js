@@ -1,12 +1,7 @@
 import { 
     authorise
-    , getAuthToken
-    , getUserLongName
     , isTokenValid
     , manifest
-    , sendAuthorisationRequest
-    , setAuthToken
-    , setUserLongName
  } from '../src/auth';
 
 // import fetch from 'isomorphic-fetch';
@@ -42,9 +37,9 @@ describe ( 'auth.js', () =>
         
         it( 'should return a valid response object', ( done ) =>
         {
-            fetchMock.get('*', {hello: 'world'});
+            fetchMock.post('*', {hello: 'world'});
                 
-            authorise( 'x', {} )
+            authorise( 'x' )
                 .catch( done )
                 .then( response => {
                     expect( response ).to.exist;
@@ -60,37 +55,6 @@ describe ( 'auth.js', () =>
         it ( 'should resolve to valid JSON object' );
         it ( 'should reject with error upon fail' );
     });  
-
-
-
-
-
-
-
-
-    describe ( 'getAuthToken', () => 
-    {
-        it ( 'should exist', () => 
-        {
-            expect( getAuthToken ).to.exist;
-            expect( getAuthToken ).to.be.a.function;
-        
-        } );
-        
-    });     
-            
-    describe ( 'getUserLongName', () => 
-    {
-        it ( 'should exist', () => 
-        {
-            expect( getUserLongName ).to.exist;
-            expect( getUserLongName ).to.be.a.function;
-            expect( getUserLongName ).to.not.throw ;
-        } );
-    });   
-
-
-
 
 
     describe ( 'isTokenValid', () => 
@@ -145,33 +109,6 @@ describe ( 'auth.js', () =>
             expect( manifest ).to.be.an.object;
         } );
     });             
-
-    describe ( 'sendAuthorisationRequest', () => 
-    {
-        it ( 'should exist', () => 
-        {
-            expect( sendAuthorisationRequest ).to.not.exist;
-        } );
-    }); 
-           
-    describe ( 'setAuthToken', () => 
-    {
-        it ( 'should exist', () => 
-        {
-            expect( setAuthToken ).to.exist;
-            expect( setAuthToken ).to.be.a.function;
-            expect( setAuthToken ).to.not.throw    ;
-        } );
-    });             
-    describe ( 'setUserLongName', () => 
-    {
-        it ( 'should exist', () => 
-        {
-            expect( setUserLongName ).to.exist;
-            expect( setUserLongName ).to.be.a.function;
-            expect( setUserLongName ).to.not.throw ;
-        } );
-    });    
     
 });
       

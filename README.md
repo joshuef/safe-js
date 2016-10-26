@@ -85,10 +85,9 @@ nfs.createFile(token, 'primaryIndex.json', {} ,false, APP_DIR);
 
 #### `authorise`
 
-[Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. If a `tokenKey` is passed it will check for an existing token in localstorage, if a valid key is found, it will
-
+[Authorise the app](https://api.safedev.org/auth/authorize-app.html) with the SAFE launcher. 
 -  `packageData` - Object containing your app information. This is how the application will authorised in the launcher. 
-- `tokenKey` - Optional string to ID the returned auth token in localStorage (SAFE browser will overwrite this with its own storage token)
+
 
 eg: 
 
@@ -118,17 +117,7 @@ Returns an object of the form:
 
 If the current token was valid, `permissions` will be omitted.
 
-#### `getAuthToken`
-
-Returns the token stored at `tokenKey` in localStorage
-
 - `tokenKey` - string to ID the auth token in localStorage
-
-#### `getUserLongName`
-
-Returns the longName stored at `LongNameKey` in localStorage
-
-- `LongNameKey` - string to ID the long name key in localStorage
 
 
 #### `isTokenValid`
@@ -138,16 +127,6 @@ Check if an app token is valid.
 - `token` - Auth token string.
 
 Returns a promise, which returns a boolean of validity.
-
-#### `setAuthToken`
-
-Saves the token stored at `tokenKey` in localStorage
-
-
-#### `setUserLongName`
-
-Saves the userLongName stored at `longNameKey` in localStorage
-
 
 
 ### dns.js 
