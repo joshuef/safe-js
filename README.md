@@ -281,6 +281,19 @@ Get a file.
 Returns a Promise which resolves to the response.
 
 
+#### `getFileMetadata`
+
+Get a file's metadata. 
+
+(https://api.safedev.org/nfs/file/get-file.html)
+
+- `token` - (`string`) auth token
+- `filePath` - (`string`) file path
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves to the response headers upon success.
+
+
 
 #### `rename`
 

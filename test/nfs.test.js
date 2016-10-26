@@ -181,6 +181,25 @@ describe ( 'nfs.js', () =>
         it ( 'should reject with error upon fail' );
     });   
     
+     
+    
+    describe ( 'getFileMetadata', () => 
+    {
+        it ( 'should exist', () => 
+        {
+            expect( getFile ).to.exist;
+            expect( getFile ).to.be.a.function;
+            expect( getFile ).to.not.throw ;
+        } );
+        
+        it ( 'should return a promise' );
+        it ( 'should send the correct headers / info in payload' );
+        it ( 'should resolve to valid HEADERS object on success' );
+        it ( 'should resolve an array of service names' );
+
+        it ( 'should reject with error upon fail' );
+    });   
+    
     
     
     describe ( 'manifest', () => 

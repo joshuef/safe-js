@@ -14,10 +14,12 @@ import { parseResponse,
 export const manifest = {
     createDir               : 'promise',
     createFile              : 'promise',
+    createOrUpdateFile      : 'promise',
     deleteDir               : 'promise',
     deleteFile              : 'promise',
     getDir                  : 'promise',
     getFile                 : 'promise',
+    getFileMetadata         : 'promise',
     moveFile                : 'promise',
     moveDir                 : 'promise',
     // modifyFileContent       : 'promise',
@@ -78,6 +80,10 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
 	    });
 };
 
+export const createOrUpdateFile = function( token, filePath, dataToWrite, dataType = 'text/plain', dataLength, metadata, isPathShared = false )
+{
+	//get file metadata... fails... create... succeeeds,,, delete, create
+}
 
 
 export const deleteDir = function( token, dirPath, isPathShared = false ) {
@@ -145,6 +151,30 @@ export const getFile = function( token, filePath, isPathShared = false ) {
         .then( (response) => {
 	    return response;
 
+        })
+
+};
+
+export const getFileMetadata = function( token, filePath, isPathShared = false ) {
+    var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
+    var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
+    var payload = {
+		method: 'HEAD',
+        headers: {
+            'Authorization':'Bearer ' + token
+        }
+    };
+	    
+    return fetch(url, payload)
+        .then( (response) => {
+			if( response.status === 200 )
+			{
+				return response.headers;
+			}
+			else 
+			{
+				return Promise.reject( response.status + ' ' + response.statusText );
+			}
         })
 
 };
