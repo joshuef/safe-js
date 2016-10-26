@@ -80,9 +80,35 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
 	    });
 };
 
+
 export const createOrUpdateFile = function( token, filePath, dataToWrite, dataType = 'text/plain', dataLength, metadata, isPathShared = false )
 {
-	//get file metadata... fails... create... succeeeds,,, delete, create
+	return getFileMetadata( token, filePath, isPathShared )
+		.then( headers => 
+		{
+			//we dont need the headers, but now we know the file exists, so lets kill it.
+			return deleteFile( token, filePath, isPathShared )
+			.then( success => 
+			{
+				if( success )
+				{
+					return createFile( token, filePath, dataToWrite, dataType, dataLength, metadata, isPathShared );
+				}
+			})
+
+		})
+		.catch( response =>
+		{
+			//file doesnt exist 
+			if( response.status === 404 )
+			{
+				return createFile( token, filePath, dataToWrite, dataType, dataLength, metadata, isPathShared );
+			}
+			else 
+			{
+				return Promise.reject( response )
+			}
+		} )
 }
 
 
@@ -173,7 +199,7 @@ export const getFileMetadata = function( token, filePath, isPathShared = false )
 			}
 			else 
 			{
-				return Promise.reject( response.status + ' ' + response.statusText );
+				return Promise.reject( response );
 			}
         })
 

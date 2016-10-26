@@ -217,6 +217,22 @@ Returns a Promise which resolves truthy upon success.
 
 Returns a Promise which resolves truthy upon success.
 
+#### `createOrUpdateFile`
+
+Helper function to make or update a file as no current method exists to do this in the SAFE API at this point.
+
+Either creates a file if it doesn't exist, or deletes and recreates with the new content if it does already exist.
+
+- `token` - (`string`) auth token
+- `filePath` - (`string`) file path
+- `dataToWrite` - data of file being uploaded
+- `dataType` - (`string` - optional), type of data being uploaded. `text/plain` for example.
+- `dataLength` - (`int` - optional) length of data being written.
+- `metadata` - (`base64 string` - optional) metadata for the dir.
+- `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
+
+Returns a Promise which resolves truthy upon success.
+
 #### `deleteDir`
 
 (https://api.safedev.org/nfs/directory/delete-directory.html)
