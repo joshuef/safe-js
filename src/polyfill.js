@@ -7,7 +7,7 @@ if( ! window.safeAuth )
 
 if( ! window.safeNFS )
 {
-    window.safeDNS = safejs.nfs;
+    window.safeNFS = safejs.nfs;
 }
 
 if( ! window.safeDNS )
