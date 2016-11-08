@@ -14,12 +14,12 @@ const failParsing = response =>
     //handle unauthorised requests
     if( response.status === 401 )
     {
-        return Promise.reject( response.statusText );
+        return Promise.reject( new Error ( response.statusText ) );
     }
     
     return response.clone().json().then( json => 
     {
-        return Promise.reject( json );
+        return Promise.reject( new Error ( json ) );
     }) ;
 }
 
