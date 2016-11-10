@@ -175,7 +175,7 @@ export const getFile = function( token, filePath, isPathShared = false ) {
     
     return fetch(url, payload)
         .then( (response) => {
-	    return response;
+	    return response.buffer();
 
         })
 
