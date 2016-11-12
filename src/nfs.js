@@ -73,7 +73,8 @@ export const createFile = function( token, filePath, dataToWrite, dataType = 'te
     {
         payload.headers.Metadata = metadata;
     }
-    
+	
+	    
     return fetch( url, payload )
 	    .then( (response) => {
 			return checkBooleanResponse( response );
@@ -86,7 +87,6 @@ export const createOrUpdateFile = function( token, filePath, dataToWrite, dataTy
 	return getFileMetadata( token, filePath, isPathShared )
 		.then( headers => 
 		{
-			//we dont need the headers, but now we know the file exists, so lets kill it.
 			return deleteFile( token, filePath, isPathShared )
 			.then( success => 
 			{
@@ -106,7 +106,7 @@ export const createOrUpdateFile = function( token, filePath, dataToWrite, dataTy
 			}
 			else 
 			{
-				return Promise.reject( response )
+				return Promise.reject( parseResponse( response ) )
 			}
 		} )
 }
@@ -164,7 +164,14 @@ export const getDir = function(token, dirPath, isPathShared = false) {
 };
 
 
-export const getFile = function( token, filePath, isPathShared = false ) {
+const validResponseParsing = [ 'buffer','blob','json','text' ];
+export const getFile = function( token, filePath, responseParsing = 'text' , isPathShared = false ) {
+	
+	if( !validResponseParsing.includes( responseParsing ) )
+	{
+		return Promise.reject( new Error( 'invalid response parsing method, should be one of: ' + validResponseParsing.join() ));
+	}
+	
     var rootPath = isPathShared ? ROOT_PATH.DRIVE : ROOT_PATH.APP;
     var url = SERVER + 'nfs/file/' + rootPath + '/' + filePath;
     var payload = {
@@ -172,10 +179,23 @@ export const getFile = function( token, filePath, isPathShared = false ) {
             'Authorization':'Bearer ' + token
         }
     };
-    
+	    
     return fetch(url, payload)
         .then( (response) => {
-	    return response;
+			
+			if( ! response.ok )
+			{
+				return parseResponse( response );
+			}
+			
+			if( ! responseParsing )
+			{
+				return response;
+			}
+			else 
+			{
+				return response[ responseParsing ]();
+			}
 
         })
 

@@ -19,7 +19,7 @@ const failParsing = response =>
     
     return response.clone().json().then( json => 
     {
-        return Promise.reject( new Error ( json ) );
+        return Promise.reject( new Error (  json  ) );
     }) ;
 }
 
