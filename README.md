@@ -2,11 +2,9 @@
 
 Isomorphic adaptation of API hooks found in the [safe demo app](https://github.com/maidsafe/safe_examples).
 
-Built using [isomorphic-fetch](https://github.com/matthew-andrews/isomorphic-fetch) so it should work in node or in the browser.
+Built using [isomorphic-fetch](https://github.com/matthew-andrews/isomorphic-fetch), to work in node or in the browser.
 
-Currently super-alpha. Limited tests done so far, but auth and create file endpoints work. This is currently mostly a learning project for the SAFE api.
-
-If it's useful and you find problems (you will), PRs are welcome!
+Currently still in beta. YMMV. Please report any issues. Pull requests are entirely welcome for features and documentation.
 
 ## Use
 
@@ -292,6 +290,7 @@ Get a file.
 
 - `token` - (`string`) auth token
 - `filePath` - (`string`) file path
+- `responseParsing` - (`string`) type of response parsing to return. Defaults to `text`, can be `buffer`,`blob`,`json` or `false`, which would simply return the response.
 - `isPathShared` - (`bool` - optional) `true` if writing to the shared`DRIVE`, `false` writes to `APP`;
 
 Returns a Promise which resolves to the response.
