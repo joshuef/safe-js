@@ -17,22 +17,6 @@ export const manifest = {
 }
 
 
-/**
- * authorise the application on the SAFE Network
- * @param  { object }  packageData      safeAuth object 
- *                                      {
-                                         name: '',
-                                         id: '',
-                                         version: '',
-                                         vendor: ''
-                                        }
- * @param  { string }  [tokenKey=TOKEN_KEY] key to save token as in localStorage (in a browser)
- * @param  {Boolean} isTokenValid         [OPTIONAL] Token validator function
- * @return {[type]}                       [description]
- *
- * TODO: Remove token check here, this should essentially just be the same as
- * sendAuthRequest
- */
  export const authorise = function( packageData )
  {
      if( !packageData )

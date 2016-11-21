@@ -12,9 +12,9 @@ export const ROOT_PATH =
 const failParsing = response => 
 {
     //handle unauthorised requests
-    if( response.status === 401 )
+    if( response.status === 401 || response.status === 404  )
     {
-        return Promise.reject( new Error ( response.statusText ) );
+        return Promise.reject( response );
     }
     
     return response.clone().json().then( json => 
