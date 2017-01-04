@@ -215,7 +215,7 @@ export const readData = (token, handleId, version) => {
       {
         throw new Error( 'Read StructuredData failed with status ' + response.status + ' ' + response.statusText );
       }
-      return response.buffer();
+      return response;
     })
 };
 
@@ -261,7 +261,7 @@ export const serialise = (token, handleId) => {
           errorUrl : url
         });
       }
-      return response.buffer();
+      return response;
     });
 };
 
