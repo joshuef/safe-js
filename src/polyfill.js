@@ -42,6 +42,6 @@ if( ! window.safeSignKey )
 
 if( ! window.safeImmutableData )
 {
-    window.safeImmutableData = safejs.signKey;
+    window.safeImmutableData = safejs.immutableData;
 }
 
