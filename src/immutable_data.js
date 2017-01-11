@@ -79,7 +79,7 @@ export const read = (token, handleId) => {
           errorUrl : url
         });
       }
-      return response.buffer();
+      return response;
     });
 };
 

@@ -349,7 +349,7 @@ export const serialise = (token, handleId) => {
       {
         throw new Error('Clear data from AppendableData failed with status ' + response.status + ' ' + response.statusText );
       }
-      return response.buffer();
+      return response;
     });
 };
 
